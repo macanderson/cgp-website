@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 630px;
+    background: #FBFBF9;
+    font-family: "STIX Two Text", Georgia, serif;
+    color: #16191C;
+    display: flex; flex-direction: column;
+    padding: 56px 72px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .topline {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 15px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: #57616B;
+    border-bottom: 2px solid #16191C;
+    padding-bottom: 18px;
+  }
+  .topline .n { color: #B42332; font-weight: 600; }
+  h1 {
+    font-size: 84px; line-height: 1.06; font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-top: 64px;
+    max-width: 900px;
+  }
+  h1 em { font-style: italic; font-weight: 500; color: #B42332; }
+  .sub {
+    margin-top: 28px;
+    font-size: 26px; line-height: 1.5; color: #57616B;
+    max-width: 760px;
+  }
+  .bottom {
+    margin-top: auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .brand .words { font-size: 30px; font-weight: 600; }
+  .ver {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 17px; color: #878F97;
+  }
+  svg.watermark {
+    position: absolute; right: -60px; top: 120px;
+    width: 460px; opacity: 0.06;
+  }
+</style>
+</head>
+<body>
+  <svg class="watermark" viewBox="0 0 72 64" fill="none">
+    <path d="M19 11H9v42h10" stroke="#16191C" stroke-width="3.2" stroke-linecap="square"/>
+    <path d="M53 11h10v42H53" stroke="#16191C" stroke-width="3.2" stroke-linecap="square"/>
+    <path d="M28 42 43.2 23.2" stroke="#16191C" stroke-width="2.4"/>
+    <path d="M28 42h12" stroke="#16191C" stroke-width="2.4"/>
+    <circle cx="28" cy="42" r="5.2" fill="#B42332"/>
+    <circle cx="45" cy="21" r="4.2" fill="#16191C"/>
+    <circle cx="46" cy="42" r="4" fill="none" stroke="#16191C" stroke-width="2.4"/>
+  </svg>
+  <div class="topline">
+    <span>Open specification</span>
+    <span class="n">contextgraph/1.0-draft</span>
+  </div>
+  <h1>Context as <em>evidence</em>,<br>not on faith.</h1>
+  <p class="sub">An open wire protocol for context retrieval — typed, budgeted, provenance-carrying frames for LLM agents.</p>
+  <div class="bottom">
+    <div class="brand">
+      <svg width="54" height="48" viewBox="0 0 72 64" fill="none">
+        <path d="M19 11H9v42h10" stroke="#16191C" stroke-width="3.2" stroke-linecap="square"/>
+        <path d="M53 11h10v42H53" stroke="#16191C" stroke-width="3.2" stroke-linecap="square"/>
+        <path d="M28 42 43.2 23.2" stroke="#16191C" stroke-width="2.4"/>
+        <path d="M28 42h12" stroke="#16191C" stroke-width="2.4"/>
+        <circle cx="28" cy="42" r="5.2" fill="#B42332"/>
+        <circle cx="45" cy="21" r="4.2" fill="#16191C"/>
+        <circle cx="46" cy="42" r="4" fill="none" stroke="#16191C" stroke-width="2.4"/>
+      </svg>
+      <span class="words">Context Graph Protocol</span>
+    </div>
+    <span class="ver">context-graph-protocol.vercel.app</span>
+  </div>
+</body>
+</html>
