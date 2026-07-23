@@ -1,0 +1,36 @@
+# Context Graph Protocol
+
+> The Context Graph Protocol (CGP) is an open wire protocol for context retrieval. It treats a piece of context as a typed, budgeted, provenance-carrying, consent-gated, and conformance-verified unit of exchange called a frame. A host asks providers for frames relevant to a goal, under a token budget; each provider returns frames that carry their own origin, their honest cost, and a human-readable citation label. Current revision: contextgraph/1.0-draft. License: MIT OR Apache-2.0.
+
+Key facts:
+- The unit of exchange is a frame, never a blob. Seven frame kinds: snippet, symbol, fact, doc, memory, episode, graph.
+- The graph is carried in relations: a graph frame is a node with labelled edges ({ rel, target_uri, display_name? }).
+- Three content representations: full (inline), compact (transformed rendering + canonical hash), reference (no inline content; resolver handle + hash).
+- Canonical budget rule: token_cost = ceil(utf8_byte_length(content) / 4). Sum must not exceed the query's max_tokens.
+- Wire: NDJSON envelopes over stdio or streamable HTTP; eight envelope types (handshake, handshake_ack, query, frames, verify, verified, shutdown, error). CGP is NOT JSON-RPC.
+- Conformance: seven machine checks, validated adversarially against fourteen single-fault misbehave modes. Four independent implementations (Rust reference, TypeScript, Python, Go).
+- CGP composes with MCP: MCP connects tools, CGP connects context.
+
+## Documentation
+
+- [Introduction](https://context-graph-protocol.vercel.app/docs): What CGP is, the seven guarantees, scope vs MCP
+- [Core concepts](https://context-graph-protocol.vercel.app/docs/concepts): Frames, kinds, representations, relations, token accounting, temporal validity
+- [Wire protocol](https://context-graph-protocol.vercel.app/docs/wire-protocol): Envelopes, handshake, versioning, correlation, errors
+- [Schema](https://context-graph-protocol.vercel.app/docs/schema): JSON Schema (Draft 2020-12), ContextFrame and ContextQuery shapes
+- [Conformance](https://context-graph-protocol.vercel.app/docs/conformance): The seven checks, the RED suite, contextgraph-inspect, golden fixtures
+- [SDKs & host](https://context-graph-protocol.vercel.app/docs/sdks): TypeScript, Python, and Go provider SDKs; the Rust host runtime
+
+## Research
+
+- [Technical report CGP-TR-2026-01](https://context-graph-protocol.vercel.app/research): Abstract, contents, and citation
+- [Whitepaper PDF](https://context-graph-protocol.vercel.app/papers/context-graph-protocol.pdf): The full report, typeset
+
+## Source
+
+- [Specification repository](https://github.com/macanderson/context-graph-protocol): SPEC.md, JSON schema, Rust crates, SDKs, conformance suite
+- [TypeScript SDK on npm](https://www.npmjs.com/package/@contextgraphprotocol/typescript-sdk): @contextgraphprotocol/typescript-sdk
+
+## Optional
+
+- [Full documentation as one file](https://context-graph-protocol.vercel.app/llms-full.txt): Complete docs content for LLM consumption
+- [Brand](https://context-graph-protocol.vercel.app/brand): Mark and lockups, palette, usage

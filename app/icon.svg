@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="64" viewBox="0 0 72 64" fill="none">
+  <style>
+    .ink { stroke: #16191C; }
+    .ink-f { fill: #16191C; }
+    @media (prefers-color-scheme: dark) {
+      .ink { stroke: #E9EAE5; }
+      .ink-f { fill: #E9EAE5; }
+    }
+  </style>
+  <path class="ink" d="M19 11H9v42h10" stroke-width="4.4" stroke-linecap="square"/>
+  <path class="ink" d="M53 11h10v42H53" stroke-width="4.4" stroke-linecap="square"/>
+  <path class="ink" d="M28 42 43.2 23.2" stroke-width="3.4"/>
+  <path class="ink" d="M28 42h12" stroke-width="3.4"/>
+  <circle cx="28" cy="42" r="6.4" fill="#B42332"/>
+  <circle class="ink-f" cx="45" cy="21" r="5.4"/>
+  <circle class="ink" cx="46" cy="42" r="4.6" fill="none" stroke-width="3.4"/>
+</svg>

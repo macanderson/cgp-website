@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Context Graph Protocol: Typed, Budgeted, Provenance-Carrying Context Retrieval for LLM Agents</title>
+<style>
+  @page { size: letter; margin: 24mm 22mm 26mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: "STIX Two Text", Georgia, serif;
+    font-size: 10.6pt;
+    line-height: 1.52;
+    color: #16191C;
+  }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  code, pre {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.86em;
+  }
+  a { color: #B42332; text-decoration: none; }
+
+  header { margin-bottom: 22pt; }
+  .report-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 7.6pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #57616B;
+    border-bottom: 0.6pt solid #16191C;
+    padding-bottom: 6pt;
+    margin-bottom: 22pt;
+  }
+  .report-line .n { color: #B42332; font-weight: 600; }
+  h1.title {
+    font-size: 19.5pt;
+    line-height: 1.22;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    margin-bottom: 12pt;
+    max-width: 88%;
+  }
+  .authors { font-size: 10.6pt; margin-bottom: 2pt; }
+  .affil {
+    font-size: 9pt;
+    color: #57616B;
+    margin-bottom: 16pt;
+  }
+  .abstract {
+    border-top: 0.6pt solid #C9CCC7;
+    border-bottom: 0.6pt solid #C9CCC7;
+    padding: 10pt 18pt 11pt;
+    margin: 0 14pt 20pt;
+  }
+  .abstract .k {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 7.4pt;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #B42332;
+    display: block;
+    margin-bottom: 5pt;
+  }
+  .abstract p { font-size: 9.4pt; line-height: 1.5; text-align: justify; }
+  .keywords {
+    font-size: 8.6pt;
+    color: #57616B;
+    margin: 0 32pt 22pt;
+  }
+  .keywords b { color: #16191C; font-weight: 600; }
+
+  h2 {
+    font-size: 12.6pt;
+    font-weight: 600;
+    margin: 18pt 0 7pt;
+    letter-spacing: -0.008em;
+    break-after: avoid;
+  }
+  h2 .sn { color: #B42332; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10pt; font-weight: 600; margin-right: 8pt; }
+  h3 { font-size: 10.8pt; font-weight: 600; margin: 11pt 0 5pt; break-after: avoid; }
+  p { margin-bottom: 7pt; text-align: justify; }
+  ul, ol { margin: 0 0 8pt 16pt; }
+  li { margin-bottom: 3pt; text-align: justify; }
+  li::marker { color: #B42332; }
+
+  .figure {
+    border: 0.6pt solid #C9CCC7;
+    background: #F7F7F4;
+    padding: 12pt 12pt 8pt;
+    margin: 12pt 0 14pt;
+    break-inside: avoid;
+  }
+  .figure svg { display: block; width: 100%; height: auto; }
+  .figcap {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 7.6pt;
+    line-height: 1.5;
+    color: #57616B;
+    border-top: 0.6pt solid #E3E5E1;
+    padding-top: 6pt;
+    margin-top: 8pt;
+  }
+  .figcap b { color: #B42332; font-weight: 600; }
+
+  pre.block {
+    background: #F7F7F4;
+    border: 0.6pt solid #E3E5E1;
+    padding: 8pt 10pt;
+    font-size: 7.9pt;
+    line-height: 1.5;
+    margin: 8pt 0 10pt;
+    white-space: pre-wrap;
+    break-inside: avoid;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.6pt;
+    margin: 8pt 0 4pt;
+    break-inside: avoid;
+  }
+  th {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 7.2pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: left;
+    color: #57616B;
+    border-top: 0.8pt solid #16191C;
+    border-bottom: 0.4pt solid #16191C;
+    padding: 4pt 6pt;
+  }
+  td {
+    padding: 4pt 6pt;
+    border-bottom: 0.3pt solid #C9CCC7;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: 0.8pt solid #16191C; }
+  td:first-child { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 7.9pt; white-space: nowrap; }
+  .tabcap {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 7.6pt;
+    color: #57616B;
+    margin: 3pt 0 12pt;
+  }
+  .tabcap b { color: #B42332; font-weight: 600; }
+
+  .refs { font-size: 8.9pt; }
+  .refs li { margin-bottom: 4pt; text-align: left; }
+  .refs ol { margin-left: 18pt; }
+
+  .footer-note {
+    margin-top: 20pt;
+    padding-top: 8pt;
+    border-top: 0.6pt solid #C9CCC7;
+    font-size: 8.2pt;
+    color: #57616B;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="report-line">
+    <span>Technical Report · <span class="n">CGP-TR-2026-01</span></span>
+    <span>context-graph-protocol.vercel.app</span>
+    <span>July 2026</span>
+  </div>
+  <h1 class="title">The Context Graph Protocol: Typed, Budgeted, Provenance-Carrying Context Retrieval for LLM&nbsp;Agents</h1>
+  <p class="authors">Mac Anderson<sup>†</sup> and the Context Graph Protocol contributors</p>
+  <p class="affil"><sup>†</sup>Oxagen &nbsp;·&nbsp; mac@oxagen.sh &nbsp;·&nbsp; Specification and reference implementation: github.com/macanderson/context-graph-protocol</p>
+</header>
+
+<div class="abstract">
+  <span class="k">Abstract</span>
+  <p>Large-language-model agents assemble their working context from retrieval pipelines that return opaque strings: nothing states where a passage came from, what it costs against the context window, whether it is still true, or how to cite it. We present the Context Graph Protocol (CGP), an open wire protocol that replaces the blob with a typed unit of exchange — the <i>frame</i> — carrying kind, relevance, canonical token cost, provenance, temporal validity, and a citation label. Frames relate to one another through labelled edges, making context a graph a host can traverse by anchor proximity. The protocol defines an eight-envelope NDJSON binding over stdio and streamable HTTP, an explicit capability handshake, a deterministic budget-accounting rule that renders budget honesty machine-checkable, a consent model for data egress, and three content representations that let large context travel by hash without sacrificing verifiability. Conformance is falsifiable by construction: a seven-check suite is validated against fourteen single-fault misbehaviour modes, and four independent implementations — Rust, TypeScript, Python, and Go — pass the same oracle. We argue that deterministic, canonical-order composition converts provider prompt caches from an accident into a contract, with a worked example showing a ~7× reduction in context tokens over a twenty-turn session.</p>
+</div>
+<p class="keywords"><b>Keywords:</b> context engineering · LLM agents · retrieval protocols · provenance · token budgets · conformance testing · prompt caching</p>
+
+<h2><span class="sn">1</span>Introduction: the blob-pipe problem</h2>
+<p>An agent's quality is bounded by the quality of its context, and context windows degrade as they fill. Liu et&nbsp;al. showed that models reliably use information at the edges of long contexts while missing it in the middle [1]; Hong et&nbsp;al. measured systematic performance decay — "context rot" — as input length grows even on trivially simple tasks [2]. The engineering response has been retrieval: fetch less, fetch better. But the interfaces through which agents receive retrieved context have not kept pace with what retrieval now feeds them.</p>
+<p>Today's dominant interface is what we call the <i>blob-pipe</i>: a pipeline concatenates whatever it found into a string and hands it to the model. The blob answers none of the questions an auditor — human or machine — would ask. Where did this passage come from? What does it cost against the window? Was it true at the time the question concerns? Who consented to its leaving the machine? How should the model cite it? When an agent misbehaves, the blob leaves nothing to inspect; Kapoor et&nbsp;al. argue that exactly this kind of unaccountable scaffolding is why agent benchmark results routinely overstate real-world reliability [5].</p>
+<p>The Context Graph Protocol (CGP) is a wire protocol for the retrieval interface itself. Its central commitment: <b>the unit of exchange is a frame, never a blob</b>. A frame states what it is, where it came from, what it costs, when it was true, and how to cite it. A host asks providers for frames relevant to a goal, under a token budget; providers return frames carrying their own origin, their honest cost, and a human-readable citation label; the host composes them into a prompt it can trust as <i>evidence</i>, not accept on faith.</p>
+<p>CGP is deliberately narrow. It does not specify tool invocation — that is the Model Context Protocol's scope [7], and CGP will not absorb it. MCP connects tools; CGP connects context. An agent needing both composes them: CGP frames feed the prompt, MCP tools do the work.</p>
+
+<h2><span class="sn">2</span>Design principles</h2>
+<ul>
+  <li><b>Evidence, not instruction.</b> Frame content is untrusted data. A conforming host delimits it as quoted material, never as instructions — the principle that separates an email body from its headers, made part of the protocol rather than left to host discretion.</li>
+  <li><b>Every claim checkable.</b> A guarantee whose violation is indistinguishable from legitimate behaviour cannot be checked, so capabilities are negotiated explicitly at handshake, never inferred by observation, and every normative rule is paired where possible with a machine check.</li>
+  <li><b>Honest gaps, declared.</b> The specification enumerates the rules its conformance suite cannot check (host-side consent gating, content-byte matching beyond digest grammar). A suite that quietly omitted them would be the self-attestation the project rejects.</li>
+  <li><b>Additive bias.</b> A new optional field is a minor change; a removed or renamed field requires a new major family. Normative wire shapes are separated from informative reference-host behaviour.</li>
+</ul>
+
+<h2><span class="sn">3</span>The frame model</h2>
+<p>A frame is a structured record of relevance, cost, provenance, and validity. Seven kinds cover the shapes agent context takes in practice: <code>snippet</code>, <code>symbol</code>, <code>fact</code>, <code>doc</code>, <code>memory</code>, <code>episode</code>, and <code>graph</code>. Five fields are required on every frame — <code>id</code>, <code>kind</code>, <code>title</code>, <code>score</code> (relevance in [0,1]), and <code>token_cost</code> — with content, provenance, temporal bounds, citation, embedding fingerprint, and relations layered on optionally.</p>
+
+<div class="figure">
+<svg viewBox="0 0 560 320" xmlns="http://www.w3.org/2000/svg">
+  <g font-family="IBM Plex Mono, monospace">
+    <line x1="168" y1="166" x2="296" y2="102" stroke="#57616B" stroke-width="1.2"/>
+    <text x="196" y="122" font-size="8.4" fill="#878F97">code.references</text>
+    <line x1="312" y1="100" x2="352" y2="192" stroke="#57616B" stroke-width="1.2"/>
+    <text x="338" y="146" font-size="8.4" fill="#878F97">code.calls</text>
+    <line x1="452" y1="148" x2="318" y2="102" stroke="#57616B" stroke-width="1.2"/>
+    <text x="392" y="112" font-size="8.4" fill="#878F97">doc.documents</text>
+    <line x1="256" y1="258" x2="172" y2="178" stroke="#57616B" stroke-width="1.2"/>
+    <text x="228" y="228" font-size="8.4" fill="#878F97">code.imports</text>
+    <line x1="244" y1="268" x2="128" y2="282" stroke="#57616B" stroke-width="1.2"/>
+    <text x="164" y="262" font-size="8.4" fill="#878F97">episode.follows</text>
+    <circle cx="156" cy="170" r="8" fill="#B42332"/>
+    <text x="44" y="146" font-size="9.4" font-weight="600" fill="#16191C">anchor</text>
+    <text x="44" y="158" font-size="9" fill="#57616B">file:///src/net.rs</text>
+    <circle cx="306" cy="98" r="7" fill="#16191C"/>
+    <text x="296" y="74" font-size="9.4" font-weight="600" fill="#16191C">snippet</text>
+    <text x="296" y="86" font-size="9" fill="#57616B">retry_loop</text>
+    <circle cx="356" cy="198" r="7" fill="#16191C"/>
+    <text x="372" y="202" font-size="9.4" font-weight="600" fill="#16191C">symbol</text>
+    <text x="372" y="214" font-size="9" fill="#57616B">Backoff</text>
+    <circle cx="460" cy="150" r="7" fill="#F7F7F4" stroke="#16191C" stroke-width="1.8"/>
+    <text x="446" y="178" font-size="9.4" font-weight="600" fill="#16191C">doc · reference</text>
+    <text x="446" y="190" font-size="9" fill="#57616B">runbook (by hash)</text>
+    <circle cx="258" cy="264" r="7" fill="#16191C"/>
+    <text x="274" y="268" font-size="9.4" font-weight="600" fill="#16191C">episode</text>
+    <text x="274" y="280" font-size="9" fill="#57616B">incident-42</text>
+    <circle cx="116" cy="284" r="5" fill="#16191C"/>
+    <text x="52" y="304" font-size="9" fill="#57616B">incident-41</text>
+  </g>
+</svg>
+<div class="figcap"><b>Figure 1</b> — A context graph. A graph frame is a node with its labelled edges; the host names anchors, and graph-capable providers boost frames within a few relation hops. The open node is a <i>reference</i> frame: no inline content, still verifiable by hash.</div>
+</div>
+
+<h3>3.1&nbsp;&nbsp;The graph is carried in relations</h3>
+<p>CGP is named for the graph, and the graph is carried in <code>relations</code>: a graph frame is a node with its labelled edges, not an ad-hoc serialization format. Each relation is a directional edge <code>{ rel, target_uri, display_name? }</code>. Six names are published — <code>code.calls</code>, <code>code.imports</code>, <code>code.defines</code>, <code>code.references</code>, <code>doc.documents</code>, <code>episode.follows</code> — and the vocabulary is open: providers namespace their own, and hosts must not reject unknown values. Queries meet the graph through <i>anchors</i>, focal URIs such as open files or mentioned symbols; graph-capable providers should boost frames within a small number of relation hops of an anchor. This gives CGP a portable analogue of structure-aware retrieval results from GraphRAG [3] and repository maps [4] without prescribing any particular index.</p>
+
+<h3>3.2&nbsp;&nbsp;Content-optional representations</h3>
+<p>A frame carries content in one of three representations. <code>full</code> inlines the content (and, for wire compatibility, omits the <code>representation</code> field). <code>compact</code> inlines a transformed rendering — say, a signature-only view — alongside the canonical hash of its source and a <code>transform</code> identity. <code>reference</code> carries no inline content at all: an opaque <code>content_ref</code> resolver handle plus a canonical hash; it is never encoded as an empty string. Fidelity is explicit (<code>exact</code> | <code>normalized</code> | <code>summarized</code> | <code>omitted</code>), and hosts negotiate via ordered <code>representation_preferences</code>. The consequence: large context can travel by name and still be verified byte-for-byte, and a host that already holds the bytes pays near-zero tokens to re-establish trust in them.</p>
+
+<h3>3.3&nbsp;&nbsp;Identity and time</h3>
+<p>The stable identity of a frame's exact bytes is the triple <code>(provider_id, frame_id, content_digest)</code> — the spine shared by deterministic composition, usage reports, and verification. A frame may omit its digest, but is then unverifiable and must be re-queried rather than reused. Frames are bi-temporal (<code>valid_from</code>/<code>valid_to</code> bound truth; <code>recorded_at</code> marks capture), and a query's <code>as_of</code> pins retrieval to an instant — the property that lets an agent ask what was true <i>then</i>, a need MemGPT-style memory systems surface constantly [6].</p>
+
+<h2><span class="sn">4</span>The wire protocol</h2>
+<p>The semantic layer — frames, queries, capabilities — is defined independently of transport. The current binding is NDJSON: every message is a single JSON envelope internally tagged by <code>type</code>; over stdio, exactly one envelope per line; over streamable HTTP, one envelope per request and response. CGP is <b>not</b> JSON-RPC — there is no <code>jsonrpc</code> member and no <code>method</code>/<code>params</code> split; the lifecycle is informed by MCP, but the framing is its own.</p>
+
+<table>
+  <tr><th>type</th><th>direction</th><th>payload</th></tr>
+  <tr><td>handshake</td><td>host → provider</td><td>protocol_version</td></tr>
+  <tr><td>handshake_ack</td><td>provider → host</td><td>protocol_version, provider, capabilities</td></tr>
+  <tr><td>query</td><td>host → provider</td><td>query (ContextQuery), optional id</td></tr>
+  <tr><td>frames</td><td>provider → host</td><td>result (ContextQueryResult), optional id</td></tr>
+  <tr><td>verify</td><td>host → provider</td><td>request (VerifyRequest) — capability-gated</td></tr>
+  <tr><td>verified</td><td>provider → host</td><td>response (VerifyResponse)</td></tr>
+  <tr><td>shutdown</td><td>host → provider</td><td>—</td></tr>
+  <tr><td>error</td><td>provider → host</td><td>message, optional id, optional code</td></tr>
+</table>
+<p class="tabcap"><b>Table 1</b> — The eight envelope types of contextgraph/1.0-draft.</p>
+
+<p>The host opens with <code>handshake</code>; the provider replies with its version, identity, and capabilities; no query payload moves before the exchange completes. Versioning is by major family — <code>contextgraph/1.0-draft</code> and <code>contextgraph/1.0</code> interoperate; <code>contextgraph/2.0</code> does not — which lets the draft suffix drop at freeze without a flag day. Requests may carry an opaque correlation <code>id</code> that capability-declaring providers must echo verbatim; an envelope without an id is a notification, the shape a future push extension needs. Six error codes form an open vocabulary (<code>bad_request</code>, <code>unsupported_kind</code>, <code>budget_unsatisfiable</code>, <code>unavailable</code>, <code>shutting_down</code>, <code>internal</code>); unknown codes degrade to <code>internal</code>. Robustness is contractual: a provider must survive a malformed line and tear down cleanly on <code>shutdown</code>.</p>
+
+<h2><span class="sn">5</span>Budget honesty</h2>
+<p>The context window is the scarcest resource an agent manages, so CGP makes cost accounting a first-class, checkable protocol obligation rather than a courtesy. A <i>budget token</i> is an accounting unit, not a tokenizer:</p>
+<pre class="block">token_cost = ceil( utf8_byte_length(content) / 4 )        (B3 — exact, no tolerance band)</pre>
+<p>Because the rule is deterministic in every language, honesty is machine-checkable: summed <code>token_cost</code> must not exceed the query's <code>max_tokens</code> (B1); frame count must not exceed <code>max_frames</code> (B4); and a host must drop, with a loud report, the frames of any provider that violates the budget (B2). The reference host classifies such providers as budget liars during fan-out and isolates them from well-behaved peers.</p>
+<p>A host must not treat one budget token as one model token. Four bytes per token tracks English prose; dense source code runs ~3–3.5 bytes per model token and CJK text ~3, so hosts map real budgets through a safety factor (the reference host suggests 1.35: 10,000 model tokens of headroom becomes a 7,407 budget-token query). The count covers <code>content</code> only — never titles, citation labels, or host chrome. For representation-bearing frames, <code>token_cost</code> prices the inline rendering while <code>canonical_token_cost</code> (with a named <code>tokenizer_ref</code>) prices the canonical source.</p>
+
+<h2><span class="sn">6</span>Consent and data flow</h2>
+<p>Every provider declares its data flow at handshake: <code>{ reads, writes, egress, egress_scopes[] }</code>, with four base scope classes (<code>local-only</code>, <code>org-tenant</code>, <code>third-party-index</code>, <code>third-party-model</code>) plus namespaced custom scopes. The host-side obligations are strict: never auto-enable an egress provider; never transmit a query payload before consent is recorded; and treat every non-loopback HTTP provider as egress regardless of what it claims. Scope truthfulness is conformance-checked — a provider that declares <code>local-only</code> while flagging egress is caught by the suite, and consent records retain the human-readable scope that was actually granted.</p>
+
+<h2><span class="sn">7</span>Deterministic composition and context reuse</h2>
+<p>Retrieval feeds a prompt, and modern inference pricing makes the prompt's <i>stability</i> an economic property: providers discount cached prefix reads by an order of magnitude. CGP's reference host therefore composes frames in canonical <code>FrameId</code> order — independent of arrival order, ignoring score and cost ties — inside explicit <code>&lt;frame&gt;</code> fences as quoted material. Identical evidence yields byte-identical context blocks, turning the prompt cache from an accident into a contract.</p>
+<p>The worked example in the specification's context-reuse note: a twenty-turn session composing eight frames (~4,000 tokens) per turn pays ~80,000 context tokens through a blob-pipe that reorders freely. Under canonical-order composition with cache reads priced at 0.1×, the same session pays ~11,600 effective tokens — a ~7× reduction on the context portion — with no change to what the model sees semantically. Verification closes the loop: a host re-establishes trust in cached frames via <code>verify</code>, whose verdicts (<code>valid</code>, <code>stale</code>, <code>gone</code>, <code>unknown</code>) partition reuse candidates totally, defaulting to deny.</p>
+
+<h2><span class="sn">8</span>Conformance as falsification</h2>
+<p>"CGP conformant" means green on the conformance suite for the declared capability set — a checkable claim, not a self-attestation. Seven checks cover the handshake, consent-scope truthfulness, frame validity, verify honesty, budget honesty, clean shutdown, and malformed-input tolerance; checks skip, visibly, when a capability is undeclared.</p>
+<p>The suite must also demonstrate that it can catch a cheat. The bundled reference provider ships fourteen <code>--misbehave</code> modes, each engineered to break exactly one guarantee — lying about costs, under-reporting them, flooding past <code>max_frames</code>, malforming digests and timestamps, dropping correlation ids, rubber-stamping or hollowing verification, lying about egress scope, crashing on garbage — and continuous integration asserts every mode is caught by at least one check. The mode list is discovered from the binary's own help output, so adding a misbehaviour without a catching check turns CI red. A suite that only ever passes proves nothing.</p>
+<p>Cross-language byte-exactness rests on golden fixtures: five JSON files plus a manifest (fixture profile 1.1.0), each carrying a source object, its digest-profile normalization, the exact RFC&nbsp;8785 canonical text [8], and the SHA-256 of those bytes; the manifest pins versions and digests every file, so fixtures cannot drift silently. Four independent implementations — the Rust reference and the TypeScript, Python, and Go SDKs — pass the same oracle, each pointed at the identical Rust suite through a language-neutral runner. That shared oracle is the point: every additional green implementation is independent evidence that the specification, not any one codebase, defines the protocol.</p>
+
+<h2><span class="sn">9</span>Related work</h2>
+<p><b>MCP</b> [7] standardizes how agents invoke tools and receive resources; CGP standardizes how retrieved context is typed, budgeted, and accounted. The protocols are complementary by construction: MCP has no budget-honesty contract, egress consent gate, provenance chain, or conformance suite because those are outside its scope, not deficiencies in it. <b>Long-context degradation</b> — positional loss [1] and context rot [2] — motivates budgeted, selective retrieval rather than window-stuffing. <b>Structure-aware retrieval</b> — GraphRAG's entity graphs [3] and Aider's tree-sitter repository maps [4] — demonstrates the value of the graph shape CGP makes portable. <b>MemGPT</b> [6] treats context as a managed memory hierarchy, exactly the kind of host that benefits from frames with honest costs and temporal bounds. <b>Kapoor et&nbsp;al.</b> [5] call for agent evaluations that account for cost and reproducibility; CGP's usage reports and deterministic composition are protocol-level answers to that call.</p>
+
+<h2><span class="sn">10</span>Status and governance</h2>
+<p>The protocol is published as <code>contextgraph/1.0-draft</code> with the specification, JSON Schema (Draft 2020-12), three Rust crates (<code>contextgraph-types</code>, <code>contextgraph-host</code>, <code>contextgraph-conformance</code> with the <code>contextgraph-inspect</code> prober), three SDKs, wire-transcript examples, and roughly thirty-seven stable requirement anchors (H1–H4, C1–C6, B1–B4, F1–F5, D1–D4, V1–V4, …) that conformance evidence cites. Normative changes require an issue, a specification and changelog update, and a <i>witness</i>: a conformance check or wire example proving the change is real and enforced. The freeze criterion for dropping the draft suffix includes at least two independent implementations passing conformance — a bar the TypeScript, Python, and Go SDKs already clear. Specification and code are dual-licensed MIT OR Apache-2.0.</p>
+
+<h2>References</h2>
+<div class="refs">
+<ol>
+  <li>N. F. Liu, K. Lin, J. Hewitt, A. Paranjape, M. Bevilacqua, F. Petroni, P. Liang. <i>Lost in the Middle: How Language Models Use Long Contexts.</i> TACL 2024. arXiv:2307.03172.</li>
+  <li>K. Hong, A. Troynikov, J. Huber. <i>Context Rot: How Increasing Input Tokens Impacts LLM Performance.</i> Chroma Research, 2025.</li>
+  <li>D. Edge, H. Trinh, N. Cheng, J. Bradley, A. Chao, A. Mody, S. Truitt, J. Larson. <i>From Local to Global: A Graph RAG Approach to Query-Focused Summarization.</i> Microsoft Research, 2024. arXiv:2404.16130.</li>
+  <li>P. Gauthier. <i>Building a Better Repository Map with Tree-sitter.</i> Aider project, 2023.</li>
+  <li>S. Kapoor, B. Stroebl, Z. S. Siegel, N. Nadgir, A. Narayanan. <i>AI Agents That Matter.</i> TMLR 2025. arXiv:2407.01502.</li>
+  <li>C. Packer, S. Wooders, K. Lin, V. Fang, S. G. Patil, I. Stoica, J. E. Gonzalez. <i>MemGPT: Towards LLMs as Operating Systems.</i> UC Berkeley, 2023. arXiv:2310.08560.</li>
+  <li>Anthropic et al. <i>Model Context Protocol.</i> Specification, modelcontextprotocol.io, 2024–2026.</li>
+  <li>A. Rundgren, B. Jordan, S. Erdtman. <i>JSON Canonicalization Scheme (JCS).</i> RFC 8785, IETF, 2020.</li>
+</ol>
+</div>
+
+<p class="footer-note">This report describes Context Graph Protocol revision <span class="mono">contextgraph/1.0-draft</span> as of July 2026. It is distributed under CC&nbsp;BY&nbsp;4.0; the specification and all implementations are MIT&nbsp;OR&nbsp;Apache-2.0. Canonical home: <span class="mono">https://context-graph-protocol.vercel.app</span>.</p>
+
+</body>
+</html>

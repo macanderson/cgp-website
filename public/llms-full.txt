@@ -1,0 +1,130 @@
+# Context Graph Protocol — full documentation
+
+> Complete documentation for the Context Graph Protocol (CGP), contextgraph/1.0-draft.
+> Canonical site: https://context-graph-protocol.vercel.app
+> Specification: https://github.com/macanderson/context-graph-protocol
+> License: MIT OR Apache-2.0 (specification and implementations); CC BY 4.0 (technical report).
+
+---
+
+## 1. Introduction
+
+The Context Graph Protocol is an open wire protocol for context retrieval. It treats a piece of context as a typed, budgeted, provenance-carrying, consent-gated, and conformance-verified unit of exchange called a frame. A host asks providers for frames relevant to a goal, under a token budget. Each provider returns frames that carry their own origin, their honest cost, and a human-readable citation label. The host composes them into a prompt it can trust as evidence, not accept on faith.
+
+The unit of exchange is a frame, never a blob. A frame states what it is, where it came from, what it costs, when it was true, and how to cite it. Frame content is untrusted data: a conforming host delimits it as quoted material, never as instructions.
+
+The seven guarantees (they compose; remove any one and the trust model collapses back to the blob-pipe):
+1. Provenance — frames carry a chain of origin records (file, URI, range, digest, derivation method).
+2. Budget honesty — token_cost follows a canonical rule; the sum across frames never exceeds max_tokens; hosts drop the frames of budget liars with a loud report.
+3. Consent enforcement — a provider declares its data flow (reads, writes, egress, egress_scopes); hosts never auto-enable egress providers and never transmit a query before consent is recorded.
+4. Conformance — "CGP conformant" is a machine-checked claim, not a self-attestation.
+5. Citation — every frame carries a human-readable citation_label.
+6. Version stability — versions interoperate iff they share a major family; additive changes are minor.
+7. Temporal validity — frames may declare valid_from/valid_to; queries may pin retrieval with as_of.
+
+Scope: CGP does not specify tool invocation — that is the Model Context Protocol's scope, and CGP will not absorb it. MCP connects tools (an action protocol); CGP connects context (a retrieval-evidence protocol). An agent needing both composes them: CGP frames feed the prompt, MCP tools do the work.
+
+## 2. Core concepts
+
+Frame kinds (7, snake_case on the wire): snippet, symbol, fact, doc, memory, episode, graph.
+
+Representations (3, content-optional by design):
+- full — inline content required; a full frame omits the representation field on the wire (legacy-compatible default).
+- compact — inline content is a transformed rendering, plus canonical_content_hash of the source, a transform identity ({ method, implementation, version }), and a content_ref.
+- reference — no inline content at all: an opaque content_ref resolver handle ({ provider_id, uri, expires_at? }) plus canonical_content_hash. Never encoded as content: ""; the field is omitted.
+
+Content fidelity: exact | normalized | summarized | omitted. Hosts can demand a floor with minimum_content_fidelity or require inline bytes with inline_content_requirement (required | resolvable_reference_allowed). Hosts negotiate via ordered representation_preferences on the query (absent = [full]).
+
+Relations (the graph): a graph frame is a node with its labelled edges, not an ad-hoc serialization format. A relation is a directional edge { rel, target_uri, display_name? }. Six published rel names: code.calls, code.imports, code.defines, code.references, doc.documents, episode.follows. The vocabulary is open (providers namespace their own, e.g. myindex.owns); a host must not reject unknown values. Queries meet the graph through anchors: focal URIs (open files, mentioned symbols); graph-capable providers should boost frames within a small number of relation hops of an anchor.
+
+Token accounting: a budget token is an accounting unit, not a tokenizer.
+- B3 (canonical rule): token_cost = ceil(utf8_byte_length(content) / 4). Exact equality, no tolerance band.
+- B1: summed token_cost across returned frames must not exceed the query's max_tokens.
+- B4: frame count must not exceed max_frames.
+- B2 (host-side): a host must drop, with a loud report, the frames of any provider violating B1.
+A host must not treat one budget token as one model token: the rule under-estimates dense source code (~3–3.5 bytes/model token) and CJK (~3), so hosts apply a safety factor (suggested 1.35 — informative). The count covers content only, never titles, citation labels, or host chrome. token_cost prices the inline rendering; canonical_token_cost (with tokenizer_ref, e.g. openai:o200k_base) prices the canonical source.
+
+Identity: the stable identity of a frame's exact bytes is (provider_id, frame_id, content_digest). A frame may omit content_digest but is then unverifiable and must be re-queried rather than reused.
+
+Time: frames are bi-temporal (valid_from/valid_to bound truth; recorded_at marks capture); a query's as_of pins retrieval to an instant.
+
+## 3. Wire protocol
+
+The semantic layer (frames, queries, capabilities) is defined independently of transport. Current binding: NDJSON. Every message is a single JSON envelope internally tagged by "type". Over stdio: exactly one envelope per line (an envelope must not contain a literal newline). Over streamable HTTP: one envelope per request body and one per response body.
+
+CGP is NOT JSON-RPC. There is no jsonrpc member and no method/params split. The lifecycle is informed by MCP (handshake before payload) but the framing is its own.
+
+Eight envelope types:
+| type | direction | payload |
+| handshake | host → provider | protocol_version |
+| handshake_ack | provider → host | protocol_version, provider (ProviderInfo), capabilities (Capabilities) |
+| query | host → provider | query (ContextQuery), optional id |
+| frames | provider → host | result (ContextQueryResult), optional id |
+| verify | host → provider | request (VerifyRequest) — capability-gated |
+| verified | provider → host | response (VerifyResponse) |
+| shutdown | host → provider | (none) |
+| error | provider → host | message (required), optional id, optional code |
+
+Handshake: host opens with handshake; provider replies handshake_ack with protocol_version, provider identity, capabilities. No query payload moves before this completes. H1: ack version must share the host's major family. H2: provider.name/version must be non-empty. H3: version-family mismatch must be a named error, never a hang. H4: a provider declaring capabilities.correlation must echo a request's id verbatim on the corresponding frames/error.
+
+Versioning (ABNF): version-string = "contextgraph/" major "." minor [ "-draft" ]. The major family is the substring up to the first dot. Two versions interoperate iff they share a major family (contextgraph/1.0-draft and contextgraph/1.0 interoperate; contextgraph/2.0 does not). A new optional field is a minor change; a removed or renamed field requires a new major family.
+
+Correlation: query/frames/error may carry an opaque id. A host must not send an id to a provider that did not declare capabilities.correlation. An envelope with no id is a notification (expects no reply).
+
+Errors: open vocabulary of six codes — bad_request, unsupported_kind, budget_unsatisfiable, unavailable, shutting_down, internal. Unknown or absent code is treated as internal. R1: a provider must ignore-or-error a malformed line, never crash. R2: a provider must tear down cleanly on shutdown.
+
+Example query envelope:
+{"type":"query","id":"q1","query":{"goal":"why does the retry loop give up","query_text":"retry loop","kinds":["snippet"],"anchors":["file:///repo/src/net.rs"],"max_frames":8,"max_tokens":2000,"as_of":"2026-07-01T00:00:00Z"}}
+
+## 4. Schema
+
+Single JSON Schema, Draft 2020-12: schema/contextgraph-envelope.schema.json. The root validates one envelope (oneOf over the eight types); every payload shape is under $defs. There is no separate IDL — the contextgraph-types Rust structs serialized by serde_json are the protocol.
+
+ContextFrame required fields: id, kind, title, score (0..1), token_cost (u32). Optional: content (untrusted; governed per representation), representation, content_digest (sha256: + 64 hex), content_ref, canonical_content_hash, content_fidelity, transform, minimum_content_fidelity, inline_content_requirement, canonical_token_cost, tokenizer_ref, valid_from, valid_to, recorded_at, provenance[] (omitted when empty), citation_label (non-empty when present), embedding ({ fingerprint, vector? }), relations[] (omitted when empty).
+
+ContextQuery required: goal, kinds (empty = any kind), anchors, max_frames, max_tokens (a hard contract, not a hint). Optional: query_text, embedding (only when host and provider embeddings_fingerprint match exactly — E1), as_of, representation_preferences.
+
+Capabilities fields: query ({ kinds }), correlation, graph, embeddings_fingerprint (<model-id>/<dimensions>[/<normalization>]), verify, representations, resolve.
+DataFlow: { reads, writes, egress, egress_scopes[] }. Egress scope base classes: local-only, org-tenant, third-party-index, third-party-model (+ namespaced vendor:scope).
+
+Provenance: required type (file, derivation, …); optional uri, range, digest (^sha256:[0-9a-f]{64}$), method, by.
+Relation: required rel, target_uri; optional display_name.
+FrameId: provider_id, frame_id, content_digest (nullable).
+VerifyRequest: { frames: FrameId[] }. FrameVerdict: { frame, status, replacement_digest? }; VerdictStatus: valid | stale | gone | unknown.
+
+Minimal conforming frame (from the golden fixtures):
+{"id":"frame:minimal","kind":"fact","title":"Minimal conforming frame","content":"Default arrays are omitted on the wire.","score":1.0,"token_cost":10,"citation_label":"minimal fixture"}
+
+## 5. Conformance
+
+"CGP conformant" means green on contextgraph-conformance for your declared capability set — a checkable claim, not a self-attestation.
+
+The seven checks: handshake (completes with non-empty identity and capabilities), consent-scope (egress scopes truthful and consistent with data_flow.egress), frame-validity (score in [0,1], non-empty title and citation_label, well-formed timestamps and digests), verify-honesty (a verify-capable provider compares digests, never rubber-stamps valid), budget-honesty (canonical token_cost, sum ≤ max_tokens, count ≤ max_frames), shutdown-clean (tears down without error), malformed-input-tolerance (a garbage line is ignored or errored, never a crash; stdio only).
+
+The RED suite: the bundled reference provider ships fourteen --misbehave modes, each breaking exactly one guarantee (lying costs, bad score, empty citation, bad version, crash on query, crash on garbage, under-reported cost, bad timestamp, malformed digest, frame flooding, dropped correlation id, rubber-stamp verify, hollow verify, scope lie). CI asserts every mode is caught by at least one check. A suite that only ever passes proves nothing.
+
+Tools:
+- contextgraph-inspect stdio -- ./your-provider (also: --json, --query "goal", or http <url>) — prints negotiated capabilities, runs the suite, exits non-zero when non-conformant.
+- ./.github/scripts/conformance-external.sh -- <program> [args] — points the same Rust oracle at an external provider in any language.
+
+Golden fixtures: five JSON files plus manifest.json (fixture profile 1.1.0). Each carries the source object, its digest-profile normalization, the exact RFC 8785 (JCS) canonical UTF-8 text, and the SHA-256 of those canonical bytes. The manifest pins protocol and profile versions and digests every file.
+
+## 6. SDKs and host
+
+Four independent implementations, all passing the same conformance oracle: the Rust reference (contextgraph-types, contextgraph-host, contextgraph-conformance) and three zero-dependency SDKs.
+
+TypeScript: npm install @contextgraphprotocol/typescript-sdk. Exports runStdioProvider(provider), budgetTokens(content), and the protocol types. A provider implements info(), capabilities(), query() (verify optional).
+
+Python: contextgraph_sdk (in-repo under sdk/python; stdlib-only, typed). run_stdio_provider(provider), budget_tokens(content). Any object with info()/capabilities()/query() is a provider.
+
+Go: module github.com/macanderson/context-graph-protocol/sdk/go/contextgraph. cg.RunStdioProvider(p), cg.BudgetTokens(content); implement cg.Verifier for verification.
+
+The stdio runtime in each SDK drives the whole lifecycle a host expects — handshake, query (echoing the correlation id), verify, shutdown — and stays alive with a typed error on a malformed line.
+
+contextgraph-host (Rust): provider discovery; stdio + streamable-HTTP transports; capability negotiation; budget-honest fan-out (query_all) with per-provider isolation and budget-liar classification; egress consent gating (never auto-enable, never transmit before consent; every non-loopback HTTP provider is treated as egress); deterministic composition in canonical FrameId order inside explicit <frame> fences (identical evidence → byte-identical context blocks → provider prompt caches become a contract; worked example: ~7× token reduction on the context portion of a 20-turn session); self-verifying usage reports; verify with a total retained/dropped partition, default-deny.
+
+## 7. Research
+
+Technical report CGP-TR-2026-01 (July 2026): "The Context Graph Protocol: Typed, Budgeted, Provenance-Carrying Context Retrieval for LLM Agents" — Mac Anderson and the Context Graph Protocol contributors.
+PDF: https://context-graph-protocol.vercel.app/papers/context-graph-protocol.pdf
+Landing page and BibTeX: https://context-graph-protocol.vercel.app/research
