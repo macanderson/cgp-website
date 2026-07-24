@@ -16,5 +16,5 @@ export const BIBTEX = `@techreport{anderson2026contextgraph,
   number      = {CGP-TR-2026-01},
   year        = {2026},
   month       = {7},
-  url         = {https://context-graph-protocol.vercel.app/research}
+  url         = {https://contextgraphprotocol.org/research}
 }`;
