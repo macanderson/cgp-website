@@ -1,4 +1,4 @@
-export const SITE_URL = "https://context-graph-protocol.vercel.app";
+export const SITE_URL = "https://contextgraphprotocol.org";
 
 export const GITHUB_URL = "https://github.com/macanderson/context-graph-protocol";
 

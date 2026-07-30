@@ -2,7 +2,7 @@
 
 The marketing and documentation microsite for the [Context Graph Protocol](https://github.com/macanderson/context-graph-protocol): an open wire protocol for context retrieval built on typed, budgeted, provenance-carrying frames.
 
-**Live:** https://context-graph-protocol.vercel.app
+**Live:** https://contextgraphprotocol.org
 
 ## Stack
 

@@ -1,7 +1,7 @@
 # Context Graph Protocol — full documentation
 
 > Complete documentation for the Context Graph Protocol (CGP), contextgraph/1.0-draft.
-> Canonical site: https://context-graph-protocol.vercel.app
+> Canonical site: https://contextgraphprotocol.org
 > Specification: https://github.com/macanderson/context-graph-protocol
 > License: MIT OR Apache-2.0 (specification and implementations); CC BY 4.0 (technical report).
 
@@ -126,5 +126,5 @@ contextgraph-host (Rust): provider discovery; stdio + streamable-HTTP transports
 ## 7. Research
 
 Technical report CGP-TR-2026-01 (July 2026): "The Context Graph Protocol: Typed, Budgeted, Provenance-Carrying Context Retrieval for LLM Agents" — Mac Anderson and the Context Graph Protocol contributors.
-PDF: https://context-graph-protocol.vercel.app/papers/context-graph-protocol.pdf
-Landing page and BibTeX: https://context-graph-protocol.vercel.app/research
+PDF: https://contextgraphprotocol.org/papers/context-graph-protocol.pdf
+Landing page and BibTeX: https://contextgraphprotocol.org/research
