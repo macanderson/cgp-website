@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Microsite and technical documentation for the Context Graph Protocol",
+  "packageManager": "pnpm@11.22.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
