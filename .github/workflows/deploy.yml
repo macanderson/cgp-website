@@ -1,0 +1,181 @@
+name: deploy
+
+# contextgraphprotocol.org is S3 + CloudFront in AWS account 578673726240. It
+# was on Vercel until that account was suspended over an unpaid balance and
+# every site behind it began answering 402; the bucket was filled by hand
+# during the migration and nothing has published to it since. This workflow is
+# what makes a merge reach the site.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+  # Fired by macanderson/context-graph-protocol when the protocol changes. The
+  # rendered documentation here quotes the specification, so a protocol merge
+  # that did not rebuild this site would leave the two describing different
+  # things with nothing to say which was current.
+  repository_dispatch:
+    types: [protocol-updated]
+
+concurrency:
+  # Never two deploys at once: `s3 sync --delete` from two builds interleaved
+  # can delete the other's freshly-uploaded chunks. Pull requests cancel;
+  # a deploy in flight does not.
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: build
+        run: pnpm build
+
+      # The export is what gets published, so its absence is the failure worth
+      # catching early — `next build` without `output: export` writes `.next/`
+      # and no `out/` at all, and a deploy job would otherwise discover that
+      # with nothing to upload.
+      - name: check the export exists
+        run: |
+          set -euo pipefail
+          if [ ! -f out/index.html ]; then
+            echo "::error::no out/index.html — next.config.ts must keep output: \"export\""
+            exit 1
+          fi
+          echo "exported $(find out -type f | wc -l | tr -d ' ') files"
+
+  deploy:
+    name: deploy contextgraphprotocol.org
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+      # Mints the OIDC token `gha-deploy-cgp-website` trusts. Scoped to this
+      # job so the build job — which runs on pull requests, forks included —
+      # cannot request one.
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: build
+        run: pnpm build
+
+      - uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        with:
+          # There is no stored AWS key. The role trusts exactly one subject,
+          # `repo:macanderson/cgp-website:environment:production`, so the
+          # `environment: production` line above is load-bearing — removing it
+          # breaks the deploy rather than loosening it.
+          role-to-assume: arn:aws:iam::578673726240:role/gha-deploy-cgp-website
+          aws-region: us-east-1
+
+      - name: publish
+        env:
+          BUCKET: cgp-site-578673726240
+          DISTRIBUTION: EPNX5MRWY4Y58
+        run: |
+          set -euo pipefail
+
+          # A build that failed quietly leaves its output directory present and
+          # nearly bare, and `--delete` would faithfully replicate that
+          # emptiness to production. The real site is 88 files.
+          count=$(find out -type f | wc -l | tr -d ' ')
+          if [ "$count" -lt 20 ]; then
+            echo "::error::out/ holds $count files — refusing to publish what looks like a failed build"
+            exit 1
+          fi
+          echo "publishing $count files"
+
+          # Two passes, because the two kinds of file want opposite caching and
+          # getting it wrong is either a stale site or a pointless bill.
+          #
+          # Assets under /_next/static are fingerprinted: the name changes when
+          # the bytes do, so they can be cached for a year and a browser that
+          # has one never asks again.
+          #
+          # Everything else — chiefly HTML — is `no-cache`, which means
+          # "revalidate before use" rather than "do not store". The CDN still
+          # serves it from the edge, it just checks first, so a deploy is
+          # visible immediately instead of whenever a TTL happens to lapse.
+          #
+          # Assets go up BEFORE the HTML that references them. The other order
+          # leaves a window in which a freshly-served page asks for a chunk
+          # that has not been uploaded yet.
+          aws s3 sync out/_next/static "s3://$BUCKET/_next/static" \
+            --cache-control "public, max-age=31536000, immutable" \
+            --only-show-errors
+
+          # `schema/` and `spec/` belong to macanderson/context-graph-protocol,
+          # which publishes into this same bucket. Without these excludes,
+          # `--delete` would remove them on the next merge here and every
+          # schema URL would 404 — and it would do it silently, because
+          # deleting a file the sync did not expect is not an error.
+          #
+          # This role is additionally denied write and delete on those two
+          # prefixes in IAM, so if these flags are ever dropped the deploy
+          # fails loudly instead of quietly breaking the other repository's
+          # output. The flags are the mechanism; the deny is the backstop.
+          aws s3 sync out "s3://$BUCKET" \
+            --delete \
+            --exclude '_next/static/*' \
+            --exclude 'schema/*' \
+            --exclude 'spec/*' \
+            --cache-control "no-cache" \
+            --only-show-errors
+
+          invalidation=$(aws cloudfront create-invalidation \
+            --distribution-id "$DISTRIBUTION" --paths '/*' \
+            --query 'Invalidation.Id' --output text)
+          echo "invalidation $invalidation"
+
+          # Waited on rather than fired and forgotten: the verification step
+          # below asks CloudFront for the new page, and without this it would
+          # be racing an edge that is still allowed to serve the old one.
+          aws cloudfront wait invalidation-completed \
+            --distribution-id "$DISTRIBUTION" --id "$invalidation"
+
+      # Through DNS, TLS and CloudFront, the way a reader reaches it. A green
+      # `s3 sync` only proves bytes landed in a bucket; it says nothing about
+      # whether the distribution in front of it serves them.
+      - name: verify through the public hostname
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 10); do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 https://contextgraphprotocol.org/ || echo 000)
+            [ "$code" = "200" ] && { echo "contextgraphprotocol.org -> 200"; exit 0; }
+            echo "attempt $attempt: $code"
+            sleep 6
+          done
+          echo "::error::contextgraphprotocol.org did not return 200 after the deploy (last status $code)"
+          exit 1
