@@ -18,7 +18,11 @@ macanderson org repos.
   (inner loop):** Never compile or run the full test suite while developing.
   Build and test only the crates/packages/modules touched by the change
   (plus direct dependents on interface changes). The full suite is CI's job.
-  Here: scope any future suite to the touched module, never a bare full-suite `test` script.
+  Here: `pnpm vitest run lib/docs.test.ts` (or `app/routes.test.ts`) — name the
+  file you touched. `pnpm test` runs everything and belongs to CI; reach for it
+  locally only to reproduce a CI failure on purpose. `pnpm build` is slower
+  still and is the rendering check — run it when you changed a page, not on
+  every edit.
 - **[SCR-002](docs/scr/SCR-002-durability-first-architecture.md) —
   Architecture decisions:** Do not ask. Choose the most durable option — the
   one that can't be questioned in 10 years as the right move. Cheap-and-easy
