@@ -46,6 +46,18 @@ jobs:
       - name: pnpm install
         run: pnpm install --frozen-lockfile
 
+      # Before the build, because it is the faster check and its failures are
+      # the more specific ones: "the sidebar links a page that does not exist"
+      # is a better first message than a green build that quietly ships a 404.
+      #
+      # The whole suite, not a scoped run — SCR-001 scopes the *inner loop*,
+      # and running everything is exactly CI's job. Here "everything" is under
+      # a second. docs/adr/0002 records why this tests route consistency rather
+      # than rendering: `output: export` means the `pnpm build` below already
+      # prerenders every route, so the build *is* the rendering test.
+      - name: test
+        run: pnpm test
+
       - name: build
         run: pnpm build
 
