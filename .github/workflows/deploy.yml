@@ -1,6 +1,6 @@
 name: deploy
 
-# contextgraphprotocol.org is S3 + CloudFront in AWS account 578673726240. It
+# contextgraphprotocol.org is S3 + CloudFront in AWS account 916294258235. It
 # was on Vercel until that account was suspended over an unpaid balance and
 # every site behind it began answering 402; the bucket was filled by hand
 # during the migration and nothing has published to it since. This workflow is
@@ -109,13 +109,13 @@ jobs:
           # `repo:macanderson/cgp-website:environment:production`, so the
           # `environment: production` line above is load-bearing — removing it
           # breaks the deploy rather than loosening it.
-          role-to-assume: arn:aws:iam::578673726240:role/gha-deploy-cgp-website
+          role-to-assume: arn:aws:iam::916294258235:role/gha-deploy-cgp-website
           aws-region: us-east-1
 
       - name: publish
         env:
-          BUCKET: cgp-site-578673726240
-          DISTRIBUTION: EPNX5MRWY4Y58
+          BUCKET: cgp-site-916294258235
+          DISTRIBUTION: E3FOT1HB57C89U
         run: |
           set -euo pipefail
 
