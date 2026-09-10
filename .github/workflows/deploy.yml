@@ -55,6 +55,14 @@ jobs:
       # a second. docs/adr/0002 records why this tests route consistency rather
       # than rendering: `output: export` means the `pnpm build` below already
       # prerenders every route, so the build *is* the rendering test.
+      # Ahead of the build because `tsc` alone reports a type error in about a
+      # second, where `next build` reaches the same error after compiling and
+      # prerendering sixteen routes. Same verdict, sooner, and with nothing
+      # else in the log around it. `next build` still type-checks, so this is
+      # a faster path to the same failure rather than a check the build lacks.
+      - name: typecheck
+        run: pnpm typecheck
+
       - name: test
         run: pnpm test
 
@@ -72,7 +80,20 @@ jobs:
             echo "::error::no out/index.html — next.config.ts must keep output: \"export\""
             exit 1
           fi
-          echo "exported $(find out -type f | wc -l | tr -d ' ') files"
+
+          # The social cards are drawn by the `prebuild` hook rather than
+          # committed, so a build invoked in a way that skips pnpm's lifecycle
+          # scripts produces a complete-looking site whose every share preview
+          # 404s. That is invisible on the site itself — it only shows up in
+          # somebody else's timeline — so it is checked here instead.
+          cards=$(node -e 'process.stdout.write(require("./lib/og-cards.json").map(c=>c.file).join("\n"))')
+          for card in $cards; do
+            if [ ! -f "out/og/$card" ]; then
+              echo "::error::out/og/$card missing — did the prebuild hook run? (pnpm og)"
+              exit 1
+            fi
+          done
+          echo "exported $(find out -type f | wc -l | tr -d ' ') files, including $(echo "$cards" | wc -l | tr -d ' ') social cards"
 
   deploy:
     name: deploy contextgraphprotocol.org

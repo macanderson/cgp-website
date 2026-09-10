@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Brand",
   description:
     "The Context Graph Protocol identity: the bracket-graph mark, horizontal and vertical lockups in light and dark, palette, and typography.",
   alternates: { canonical: "/brand" },
+  ...ogImages("/brand"),
 };
 
 /* eslint-disable @next/next/no-img-element */

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 import { CodeBlock } from "@/components/CodeBlock";
 import { PAPER, BIBTEX } from "@/lib/paper";
 import { PAPER_PATH, SITE_URL } from "@/lib/site";
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
   description:
     "Technical report CGP-TR-2026-01: the full argument for typed, budgeted, provenance-carrying context retrieval. Abstract, downloadable PDF, and citation.",
   alternates: { canonical: "/research" },
+  ...ogImages("/research"),
 };
 
 const articleJsonLd = {

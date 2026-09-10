@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 import { CodeBlock } from "@/components/CodeBlock";
 import { DocsPager } from "@/components/DocsPager";
 import { GITHUB_URL } from "@/lib/site";
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
   description:
     "CGP's JSON Schema (Draft 2020-12): the envelope, ContextFrame, ContextQuery, Provenance, and Relation shapes, with a real conforming frame from the golden fixtures.",
   alternates: { canonical: "/docs/schema" },
+  ...ogImages("/docs/schema"),
 };
 
 const FRAME = `{

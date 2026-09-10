@@ -5,9 +5,13 @@
   "description": "Microsite and technical documentation for the Context Graph Protocol",
   "packageManager": "pnpm@11.22.0",
   "scripts": {
+    "predev": "node scripts/gen-og.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/gen-og.mjs",
     "build": "next build",
     "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "og": "node scripts/gen-og.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

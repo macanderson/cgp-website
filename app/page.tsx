@@ -1,11 +1,13 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 import { FigureGraph } from "@/components/FigureGraph";
 import { CodeBlock } from "@/components/CodeBlock";
 import { GITHUB_URL, PAPER_PATH } from "@/lib/site";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  ...ogImages("/"),
 };
 
 const SESSION = `{"type":"handshake","protocol_version":"contextgraph/1.0-draft"}

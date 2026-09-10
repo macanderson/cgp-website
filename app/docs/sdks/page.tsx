@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 import { CodeBlock } from "@/components/CodeBlock";
 import { DocsPager } from "@/components/DocsPager";
 import { GITHUB_URL, NPM_TS_SDK_URL } from "@/lib/site";
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
   description:
     "Build a CGP provider in TypeScript, Python, or Go with zero-dependency SDKs, and run providers with the Rust host: fan-out routing, consent gating, deterministic composition.",
   alternates: { canonical: "/docs/sdks" },
+  ...ogImages("/docs/sdks"),
 };
 
 const TS = `import {

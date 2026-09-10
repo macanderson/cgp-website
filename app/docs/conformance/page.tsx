@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 import { CodeBlock } from "@/components/CodeBlock";
 import { DocsPager } from "@/components/DocsPager";
 
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   description:
     "How CGP conformance works: seven machine checks, an adversarial RED suite with fourteen misbehave modes, the contextgraph-inspect prober, and RFC 8785 golden fixtures.",
   alternates: { canonical: "/docs/conformance" },
+  ...ogImages("/docs/conformance"),
 };
 
 export default function Conformance() {
