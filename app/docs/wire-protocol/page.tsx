@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 import { CodeBlock } from "@/components/CodeBlock";
 import { DocsPager } from "@/components/DocsPager";
 
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   description:
     "CGP's NDJSON envelope binding: eight message types over stdio or streamable HTTP, the handshake lifecycle, major-family versioning, correlation ids, and the error vocabulary.",
   alternates: { canonical: "/docs/wire-protocol" },
+  ...ogImages("/docs/wire-protocol"),
 };
 
 const SESSION = `{"type":"handshake","protocol_version":"contextgraph/1.0-draft"}

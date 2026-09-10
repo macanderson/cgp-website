@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 import Link from "next/link";
 import { CodeBlock } from "@/components/CodeBlock";
 import { DocsPager } from "@/components/DocsPager";
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
   description:
     "What the Context Graph Protocol (CGP) is: an open wire protocol for context retrieval built on typed, budgeted, provenance-carrying frames. The seven guarantees and how CGP composes with MCP.",
   alternates: { canonical: "/docs" },
+  ...ogImages("/docs"),
 };
 
 export default function DocsIntro() {

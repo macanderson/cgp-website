@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Brand",
   description:
     "The Context Graph Protocol identity: the bracket-graph mark, horizontal and vertical lockups in light and dark, palette, and typography.",
   alternates: { canonical: "/brand" },
+  ...ogImages("/brand"),
 };
 
 /* eslint-disable @next/next/no-img-element */
@@ -15,36 +17,42 @@ const LOCKUPS = [
     label: "Horizontal · light",
     stage: "on-light",
     width: 420,
+    intrinsic: [561, 67],
   },
   {
     file: "cgp-lockup-horizontal-dark.svg",
     label: "Horizontal · dark",
     stage: "on-dark",
     width: 420,
+    intrinsic: [561, 67],
   },
   {
     file: "cgp-lockup-vertical-light.svg",
     label: "Vertical · light",
     stage: "on-light",
     width: 210,
+    intrinsic: [301, 224],
   },
   {
     file: "cgp-lockup-vertical-dark.svg",
     label: "Vertical · dark",
     stage: "on-dark",
     width: 210,
+    intrinsic: [301, 224],
   },
   {
     file: "cgp-mark-light.svg",
     label: "Mark · light",
     stage: "on-light",
     width: 96,
+    intrinsic: [144, 128],
   },
   {
     file: "cgp-mark-dark.svg",
     label: "Mark · dark",
     stage: "on-dark",
     width: 96,
+    intrinsic: [144, 128],
   },
 ] as const;
 
@@ -108,9 +116,16 @@ export default function Brand() {
         {LOCKUPS.map((l) => (
           <div className="lockup-tile" key={l.file}>
             <div className={`lockup-stage ${l.stage}`}>
+              {/* The intrinsic pair is each file's own viewBox, not its
+                  display size: with it the browser reserves the right box
+                  before the SVG arrives, and without it six tiles reflow the
+                  page as they load. The CSS below still governs how big they
+                  actually render. */}
               <img
                 src={`/brand/${l.file}`}
                 alt={`Context Graph Protocol lockup — ${l.label}`}
+                width={l.intrinsic[0]}
+                height={l.intrinsic[1]}
                 style={{ width: "100%", maxWidth: l.width, height: "auto" }}
               />
             </div>

@@ -49,10 +49,25 @@ CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 ## Deploy
 
-`contextgraphprotocol.org` is S3 + CloudFront in AWS account `578673726240`. It
-was on Vercel until that account was suspended over an unpaid balance and every
-site behind it began answering `402`; Vercel is not a fallback and nothing here
-may depend on it.
+`contextgraphprotocol.org` is S3 + CloudFront in AWS account `916294258235`
+(bucket `cgp-site-916294258235`, distribution `E3FOT1HB57C89U`). It was on
+Vercel until that account was suspended over an unpaid balance and every site
+behind it began answering `402`; Vercel is not a fallback and nothing here may
+depend on it.
+
+**This repository is the sole publisher of that domain, and merging to `main`
+is a production change.** That was contested for seven weeks — issue #12 froze
+merges because a Vercel project appeared to serve the apex from a *different*
+app while pointing its Git integration here. It no longer does: the apex moved
+to AWS, and the competing app was retired upstream in
+`macanderson/context-graph-protocol#68`. `docs/adr/0006` records the topology
+and the evidence; `scripts/deploy-hygiene.test.ts` fails if any of it stops
+being true.
+
+The bucket has a second tenant. `schema/` and `spec/` under it belong to
+`macanderson/context-graph-protocol`, so a reader who fetches
+`contextgraphprotocol.org/schema/contextgraph-envelope.schema.json` is served
+that repository's output, not this one's.
 
 `.github/workflows/deploy.yml` publishes on every push to `main`, on manual
 dispatch, and on a `protocol-updated` repository dispatch from

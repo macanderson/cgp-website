@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ogImages } from "@/lib/og";
 import { CodeBlock } from "@/components/CodeBlock";
 import { DocsPager } from "@/components/DocsPager";
 
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   description:
     "The CGP frame model: seven frame kinds, three representations (full, compact, reference), labelled relations, canonical token accounting, and temporal validity.",
   alternates: { canonical: "/docs/concepts" },
+  ...ogImages("/docs/concepts"),
 };
 
 export default function Concepts() {

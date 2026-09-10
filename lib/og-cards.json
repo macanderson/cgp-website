@@ -1,0 +1,77 @@
+[
+  {
+    "route": "/",
+    "file": "og-home.png",
+    "eyebrow": "Open specification",
+    "marker": "contextgraph/1.0-draft",
+    "title": ["Context as evidence,", "not on faith."],
+    "accent": "evidence",
+    "subtitle": "An open wire protocol for context retrieval — typed, budgeted, provenance-carrying frames for LLM agents."
+  },
+  {
+    "route": "/docs",
+    "file": "og-docs.png",
+    "eyebrow": "Specification · 01",
+    "marker": "contextgraph/1.0-draft",
+    "title": ["Introduction"],
+    "subtitle": "What the Context Graph Protocol is, the seven guarantees, and how it relates to MCP."
+  },
+  {
+    "route": "/docs/concepts",
+    "file": "og-docs-concepts.png",
+    "eyebrow": "Specification · 02",
+    "marker": "contextgraph/1.0-draft",
+    "title": ["Core concepts"],
+    "subtitle": "Frames, kinds, representations, relations, token accounting, and temporal validity."
+  },
+  {
+    "route": "/docs/wire-protocol",
+    "file": "og-docs-wire-protocol.png",
+    "eyebrow": "Specification · 03",
+    "marker": "contextgraph/1.0-draft",
+    "title": ["Wire protocol"],
+    "subtitle": "NDJSON envelopes, the handshake lifecycle, versioning, correlation, and errors."
+  },
+  {
+    "route": "/docs/schema",
+    "file": "og-docs-schema.png",
+    "eyebrow": "Specification · 04",
+    "marker": "contextgraph/1.0-draft",
+    "title": ["Schema"],
+    "subtitle": "The JSON Schema, ContextFrame and ContextQuery shapes, provenance, and relations."
+  },
+  {
+    "route": "/docs/conformance",
+    "file": "og-docs-conformance.png",
+    "eyebrow": "Specification · 05",
+    "marker": "contextgraph/1.0-draft",
+    "title": ["Conformance"],
+    "subtitle": "The seven checks, the adversarial RED suite, contextgraph-inspect, and golden fixtures."
+  },
+  {
+    "route": "/docs/sdks",
+    "file": "og-docs-sdks.png",
+    "eyebrow": "Specification · 06",
+    "marker": "contextgraph/1.0-draft",
+    "title": ["SDKs & host"],
+    "subtitle": "TypeScript, Python, and Go provider SDKs, plus the Rust host runtime."
+  },
+  {
+    "route": "/research",
+    "file": "og-research.png",
+    "eyebrow": "Technical report",
+    "marker": "CGP-TR-2026-01",
+    "title": ["Typed, budgeted,", "provenance-carrying", "context retrieval."],
+    "accent": "provenance-carrying",
+    "subtitle": "Four independent implementations pass one oracle. Seven conformance checks, validated against fourteen misbehaviour modes."
+  },
+  {
+    "route": "/brand",
+    "file": "og-brand.png",
+    "eyebrow": "Identity",
+    "marker": "Mark · lockups · palette",
+    "title": ["The bracket-graph", "mark."],
+    "accent": "bracket-graph",
+    "subtitle": "Horizontal and vertical lockups, light and dark, in SVG. STIX Two Text and IBM Plex Mono, annotated in carmine."
+  }
+]

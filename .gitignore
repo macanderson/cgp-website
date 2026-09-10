@@ -6,6 +6,18 @@
 /out/
 next-env.d.ts
 
+# Social cards, drawn from lib/og-cards.json by scripts/gen-og.mjs on every
+# `pnpm build` and `pnpm dev`. Generated rather than committed because there
+# is now nothing manual about producing them -- the fonts are vendored under
+# assets/fonts/, so any machine can draw a card that matches the copy. The
+# lockups under public/brand/ stay committed for the opposite reason: they
+# need a macOS system font to regenerate.
+#
+# The deploy job checks these exist in out/ before publishing, so a build that
+# skipped the prebuild hook fails there rather than shipping a site whose
+# every share preview 404s.
+/public/og/*.png
+
 # misc
 .DS_Store
 *.pem
@@ -34,3 +46,11 @@ next-env.d.ts
 /.stella/commands/*
 !/.stella/commands/triage-sweep.md
 !/.stella/commands/triage-sweep.toml
+
+# Verification artifacts — Lighthouse reports, screenshots, command output
+# captured to prove a change works. They are evidence for the pull request that
+# produced them, not source: regenerating them is a command, and a Lighthouse
+# JSON for one commit is noise against every later one. Committing a set cost
+# 7.4 MB across ten files, permanently, in a repository whose entire tracked
+# source is smaller than that. Keep them local and link them from the PR.
+verifications/
