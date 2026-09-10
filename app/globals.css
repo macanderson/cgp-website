@@ -6,7 +6,7 @@
   --paper: #fbfbf9;
   --ink: #16191c;
   --muted: #57616b;
-  --faint: #878f97;
+  --faint: #666f77;
   --rule: #e3e5e1;
   --rule-strong: #c9ccc7;
   --wash: #f4f4f0;
@@ -22,7 +22,7 @@
   --paper: #0f1214;
   --ink: #e9eae5;
   --muted: #a0a8af;
-  --faint: #737b83;
+  --faint: #848c94;
   --rule: #24292d;
   --rule-strong: #3a4046;
   --wash: #15181b;
@@ -109,17 +109,54 @@ kbd {
   color: var(--accent);
 }
 
-.prose-link,
-.prose a {
+/* Inline links inside running text.
+   A link set apart from its paragraph by colour alone fails WCAG 1.4.1 twice
+   over here: several inline links carried no colour at all (nothing but the
+   pointer distinguished them), and the ones that did sat 1.4:1 against the
+   muted text around them, under the 3:1 the technique requires. Both are
+   answered by the same non-colour affordance, so this is one rule rather than
+   a palette change.
+
+   The underline is drawn at partial opacity and goes solid on hover, which
+   keeps the annotated-paper texture the hover-reveal border was for while
+   being present from the first frame -- the previous `border-bottom: 1px
+   solid transparent` was invisible until the pointer arrived, which is
+   precisely the state a keyboard or touch reader never reaches.
+
+   `:where()` keeps the whole selector at zero specificity, so `.btn` and any
+   future component styling still wins without an override, and `:not(.btn)`
+   spares buttons that happen to live in a paragraph. */
+:where(
+    .prose,
+    .section-prose,
+    .margin-note,
+    .callout,
+    .abstract,
+    .docs-article p,
+    .docs-article li
+  )
+  a:not(.btn),
+.prose-link {
   color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 120ms ease;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  transition: text-decoration-color 120ms ease;
 }
 
-.prose-link:hover,
-.prose a:hover {
-  border-bottom-color: var(--accent);
+:where(
+    .prose,
+    .section-prose,
+    .margin-note,
+    .callout,
+    .abstract,
+    .docs-article p,
+    .docs-article li
+  )
+  a:not(.btn):hover,
+.prose-link:hover {
+  text-decoration-color: var(--accent);
 }
 
 .btn {
