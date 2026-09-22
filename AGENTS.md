@@ -50,9 +50,11 @@ macanderson org repos.
   a dedicated triage agent owns sizing and priority; a guard workflow
   strips creator-applied priorities.
 - **[SCR-006](docs/scr/SCR-006-schema-changes-are-labelled.md) — Schema
-  changes and migrations:** A pull request that changes a schema carries
-  `migration-required`, and the migration reaches production before or with
-  the deploy of that change, never after. Say in the PR which store changed
-  and what must be applied. Where a repo has no automation to apply the label
-  from the diff, apply it by hand. Do not add an automatic apply to a deploy
-  pipeline under this record; that is a separate decision, made per repo.
+  changes and migrations:** This repository has no persistent store, so
+  SCR-006 is inert here. The `schema/` and `spec/` data in its shared bucket
+  belong to the protocol repository, and a change to them needs no
+  `migration-required` label. In a repo that owns a store, a pull request that
+  changes a schema carries `migration-required`, and the migration reaches
+  production before or with the deploy of that change, never after. Do not add
+  an automatic apply to a deploy pipeline under this record; that is a
+  separate decision, made per repo.
