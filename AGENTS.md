@@ -5,6 +5,18 @@ is the marketing and documentation site for the Context Graph
 Protocol — a Next.js (App Router) app managed with pnpm. `README.md`
 is the authoritative source for the details.
 
+## Local execution
+
+Mac set this on 2026-09-26 for every repository on this machine. Local builds, test runs, dev servers, and git hooks ran the laptop out of memory and killed agent runs partway through, and every killed run costs money. CI is the only place code is built, checked, or tested.
+
+- Do not run the gate, a build, a typecheck, a lint, or any test, not even one test file. Push the branch and read the CI result. Read a failed job with `gh run view --job <id> --log-failed`.
+- Do not start a dev server: no `next dev`, `next start`, `pnpm dev`, a server under `cargo run`, or anything else that listens on a port.
+- Do not start Docker or Colima, and do not run anything that needs them.
+- Do not run Biome in any form.
+- Git hooks are off on this machine. `LEFTHOOK=0` and `HUSKY=0` are set for every shell and every Claude Code session. Do not reinstall a hook, turn one back on, or run a hook's commands by hand.
+- Code generators and small integrity scripts that only read and write files are allowed, such as regenerating a checksum, a schema index, or a message catalogue.
+- Put this rule, word for word, in the prompt of every subagent you start.
+
 ## Standing decisions — apply without asking
 
 Each directive below is a Steering Context Record in [`docs/scr/`](docs/scr/);
@@ -18,11 +30,9 @@ macanderson org repos.
   (inner loop):** Never compile or run the full test suite while developing.
   Build and test only the crates/packages/modules touched by the change
   (plus direct dependents on interface changes). The full suite is CI's job.
-  Here: `pnpm vitest run lib/docs.test.ts` (or `app/routes.test.ts`) — name the
-  file you touched. `pnpm test` runs everything and belongs to CI; reach for it
-  locally only to reproduce a CI failure on purpose. `pnpm build` is slower
-  still and is the rendering check — run it when you changed a page, not on
-  every edit.
+  Here: CI runs `pnpm typecheck`, `pnpm test`, and `pnpm build` on every pull
+  request. None of them runs on this machine, not even `pnpm vitest run` on
+  one file.
 - **[SCR-002](docs/scr/SCR-002-durability-first-architecture.md) —
   Architecture decisions:** Do not ask. Choose the most durable option — the
   one that can't be questioned in 10 years as the right move. Cheap-and-easy
