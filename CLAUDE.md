@@ -5,3 +5,5 @@
 Repo-wide agent guidance lives in `AGENTS.md` (imported above) so that every
 agent — Claude Code and Stella alike — loads the same steering context,
 including the standing-decisions block backed by `docs/scr/`.
+
+The Local execution section in `AGENTS.md` bars local builds, tests, dev servers, Docker, Biome, and git hooks on this machine.
