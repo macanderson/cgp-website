@@ -9,3 +9,5 @@ including the standing-decisions block backed by `docs/scr/`.
 The Local execution section in `AGENTS.md` bars local builds, tests, dev servers, Docker, Biome, and git hooks on this machine.
 
 The Agent-monitored pull requests section in `AGENTS.md` sets how an agent labels, watches, and fixes a PR.
+
+The Issue fields and reflection section in `AGENTS.md` sets the board fields every issue carries and what an agent records when its run ends.
