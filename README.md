@@ -100,6 +100,13 @@ a year, everything else `no-cache` so a deploy is visible immediately. The job
 then waits for the CloudFront invalidation and re-checks the public hostname,
 because a green `s3 sync` only proves bytes reached a bucket.
 
+A Vercel project, `cgp-website` in the `oxagen-inc` team, also serves a copy of
+this site at https://cgp-website-phi.vercel.app. It was created on 2026-09-29.
+It holds no custom domain and is not linked to Git, so it changes only when
+someone runs `vercel deploy --prod --scope oxagen-inc` from a checkout of
+`main`. The apex stays on AWS, and the deploy job above remains the only
+publisher of `contextgraphprotocol.org`.
+
 Infrastructure lives in the `oxagen-aws-infra` repository (`stacks/cgp`,
 `stacks/ci-deploy`).
 
