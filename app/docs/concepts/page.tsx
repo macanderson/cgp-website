@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ogImages } from "@/lib/og";
 import { CodeBlock } from "@/components/CodeBlock";
 import { DocsPager } from "@/components/DocsPager";
+import { PROTOCOL_VERSION } from "@/lib/protocol";
 
 export const metadata: Metadata = {
   title: "Core concepts",
@@ -26,8 +27,10 @@ export default function Concepts() {
 
       <h2>Frame kinds</h2>
       <p>
-        Every frame declares one of seven kinds, serialized in snake_case on
-        the wire:
+        <code>{PROTOCOL_VERSION}</code> defines seven base kinds, serialized in
+        snake_case on the wire. A later 1.x revision may add a kind, so a host
+        accepts a kind it does not recognise and keeps the frame as opaque
+        evidence.
       </p>
       <div className="table-scroll">
         <table className="field-table">

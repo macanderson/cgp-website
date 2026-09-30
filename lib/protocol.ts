@@ -36,19 +36,19 @@ export const CRATE_MAJOR = CRATE_VERSION.split(".")[0];
 export const PUBLISHED_CRATES = [
   {
     name: "contextgraph-types",
-    role: "The wire types: frames, queries, capabilities, and provenance.",
+    role: "wire types for frames, queries, capabilities, and provenance",
   },
   {
     name: "contextgraph-host",
-    role: "The host runtime: discovery, transports, negotiation, routing, and consent gating.",
+    role: "host runtime with discovery, transports, negotiation, routing, and consent gating",
   },
   {
     name: "contextgraph-conformance",
-    role: "The conformance suite and the contextgraph-inspect binary.",
+    role: "conformance suite and the contextgraph-inspect binary",
   },
   {
     name: "contextgraph-trace",
-    role: "Host execution trace types. Sketch stage, and outside the contextgraph/1.0 stable surface.",
+    role: `host execution trace types and replay oracles, at sketch stage and outside the ${PROTOCOL_VERSION} stable surface`,
   },
 ] as const;
 
