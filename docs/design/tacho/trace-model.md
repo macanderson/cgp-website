@@ -138,7 +138,7 @@ the evidentiary record. Only the latter is chain-verifiable.
 ## 5. CGP export mapping
 
 The CGP Export Provider is a standard CGP provider (revision
-`contextgraph/1.0-draft`, NDJSON envelopes, handshake/query/frames/verify) that
+`contextgraph/1.0`, NDJSON envelopes, handshake/query/frames/verify) that
 serves Tacho history as frames. This keeps the strategic tie-in without
 stretching CGP into an action protocol: an agent can ask, through the same
 protocol it uses for code context, *"have I done this before, and was it
