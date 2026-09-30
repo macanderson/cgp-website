@@ -39,14 +39,14 @@ export const DOCS: DocEntry[] = [
     n: "05",
     title: "Conformance",
     description:
-      "The seven checks, the adversarial RED suite, contextgraph-inspect, and golden fixtures.",
+      "Provider, host, and composition checks, the adversarial RED suite, contextgraph-inspect, and golden fixtures.",
   },
   {
     slug: "sdks",
     n: "06",
     title: "SDKs & host",
     description:
-      "TypeScript, Python, and Go provider SDKs, plus the Rust host runtime.",
+      "The Rust crates on crates.io, TypeScript, Python, and Go provider SDKs, and the Rust host runtime.",
   },
 ];
 

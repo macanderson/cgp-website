@@ -1,6 +1,7 @@
 # Context Graph Protocol — full documentation
 
-> Complete documentation for the Context Graph Protocol (CGP), contextgraph/1.0-draft.
+> Complete documentation for the Context Graph Protocol (CGP).
+> Current revision: contextgraph/1.0, frozen on 2026-08-11. Rust crates: 2.0.0 on crates.io.
 > Canonical site: https://contextgraphprotocol.org
 > Specification: https://github.com/macanderson/context-graph-protocol
 > License: MIT OR Apache-2.0 (specification and implementations); CC BY 4.0 (technical report).
@@ -26,7 +27,7 @@ Scope: CGP does not specify tool invocation — that is the Model Context Protoc
 
 ## 2. Core concepts
 
-Frame kinds (7, snake_case on the wire): snippet, symbol, fact, doc, memory, episode, graph.
+Frame kinds (7 base kinds, snake_case on the wire): snippet, symbol, fact, doc, memory, episode, graph. The vocabulary is open. A later 1.x revision may add a kind, so a host accepts a kind it does not recognise and keeps the frame as opaque evidence.
 
 Representations (3, content-optional by design):
 - full — inline content required; a full frame omits the representation field on the wire (legacy-compatible default).
@@ -67,11 +68,13 @@ Eight envelope types:
 
 Handshake: host opens with handshake; provider replies handshake_ack with protocol_version, provider identity, capabilities. No query payload moves before this completes. H1: ack version must share the host's major family. H2: provider.name/version must be non-empty. H3: version-family mismatch must be a named error, never a hang. H4: a provider declaring capabilities.correlation must echo a request's id verbatim on the corresponding frames/error.
 
-Versioning (ABNF): version-string = "contextgraph/" major "." minor [ "-draft" ]. The major family is the substring up to the first dot. Two versions interoperate iff they share a major family (contextgraph/1.0-draft and contextgraph/1.0 interoperate; contextgraph/2.0 does not). A new optional field is a minor change; a removed or renamed field requires a new major family.
+Versioning (ABNF): version-string = "contextgraph/" major "." minor [ "-draft" ]. The major family is the substring up to the first dot. Two versions interoperate iff they share a major family: contextgraph/1.0 and a later contextgraph/1.1 interoperate, and contextgraph/2.0 does not. A new optional field is a minor change. A removed or renamed field requires a new major family. The pre-freeze name contextgraph/1.0-draft still parses and still interoperates after the freeze on 2026-08-11. New implementations send contextgraph/1.0. In Rust, read contextgraph_types::PROTOCOL_VERSION and compare families with contextgraph_host::wire::versions_compatible.
+
+Protocol and crate versions are separate axes. The protocol version (contextgraph/1.0) is what the handshake negotiates. The Rust crates are at 2.0.0 and follow semver for their Rust API. Crate 2.0.0 changed the Rust API (FrameKind became an open vocabulary) and left the wire bytes as they were. A wire-breaking change needs contextgraph/2.0 and a new crate major together. No 1.x crate reached crates.io.
 
 Correlation: query/frames/error may carry an opaque id. A host must not send an id to a provider that did not declare capabilities.correlation. An envelope with no id is a notification (expects no reply).
 
-Errors: open vocabulary of six codes — bad_request, unsupported_kind, budget_unsatisfiable, unavailable, shutting_down, internal. Unknown or absent code is treated as internal. R1: a provider must ignore-or-error a malformed line, never crash. R2: a provider must tear down cleanly on shutdown.
+Errors: open vocabulary of eight codes: bad_request, unsupported_kind, unsupported_representation, incompatible_version, budget_unsatisfiable, unavailable, shutting_down, internal. Unknown or absent code is treated as internal. incompatible_version is the named error H3 requires, and a host must not retry it. R1: a provider must ignore-or-error a malformed line, never crash. R2: a provider must tear down cleanly on shutdown.
 
 Example query envelope:
 {"type":"query","id":"q1","query":{"goal":"why does the retry loop give up","query_text":"retry loop","kinds":["snippet"],"anchors":["file:///repo/src/net.rs"],"max_frames":8,"max_tokens":2000,"as_of":"2026-07-01T00:00:00Z"}}
@@ -99,23 +102,29 @@ Minimal conforming frame (from the golden fixtures):
 
 "CGP conformant" means green on contextgraph-conformance for your declared capability set — a checkable claim, not a self-attestation.
 
-The seven checks: handshake (completes with non-empty identity and capabilities), consent-scope (egress scopes truthful and consistent with data_flow.egress), frame-validity (score in [0,1], non-empty title and citation_label, well-formed timestamps and digests), verify-honesty (a verify-capable provider compares digests, never rubber-stamps valid), budget-honesty (canonical token_cost, sum ≤ max_tokens, count ≤ max_frames), shutdown-clean (tears down without error), malformed-input-tolerance (a garbage line is ignored or errored, never a crash; stdio only).
+Provider checks (14; a check that does not apply to the declared capabilities is skipped and reported): handshake (completes with non-empty identity and capabilities), consent-scope (declared egress scopes well-formed and consistent with data_flow.egress), frame-validity (score in [0,1], non-empty title and citation_label, well-formed timestamps and digests, file ranges in the line grammar), verify-honesty (valid for served digests, stale for mutated ones), budget-honesty (canonical token_cost, sum ≤ max_tokens, count ≤ max_frames), as-of-temporal (every frame's validity window contains the as_of pin), kinds-filter (a kind-filtered query returns only that kind), anchor-relevance (a graph provider's frames anchor on a uri or a relation target), provenance-fixture-consistency (each file provenance digest matches the bytes it names), shutdown-clean (tears down without error), malformed-input-tolerance (bad_request or ignored, and the provider keeps running; stdio only), embedding-fingerprint (a query embedding that contradicts the declared dimension gets bad_request; stdio only), correlation (a provider that declares correlation echoes each id; stdio only), attestation (every provenance attestation verifies against a key from the handshake; stdio only).
 
-The RED suite: the bundled reference provider ships fourteen --misbehave modes, each breaking exactly one guarantee (lying costs, bad score, empty citation, bad version, crash on query, crash on garbage, under-reported cost, bad timestamp, malformed digest, frame flooding, dropped correlation id, rubber-stamp verify, hollow verify, scope lie). CI asserts every mode is caught by at least one check. A suite that only ever passes proves nothing.
+Host checks (9, run with contextgraph-inspect host): host-version-reject, host-budget-drop, host-frame-limit, host-consent-gate, host-scope-receipt, host-provenance-bytes, host-content-quoting, host-crash-isolation, host-composition-audit. Composition checks (4, run_composition_conformance): budget bound, total partition of offered frames, quarantine, determinism.
+
+The RED suite: the bundled reference provider (contextgraph-example-docs) ships 31 --misbehave modes, each breaking exactly one guarantee, for example lying costs, frame flooding, a dropped correlation id, rubber-stamp verify, a scope lie, or a forged signature. CI runs every mode and fails unless a check catches it. A skipped check does not count as a catch. A suite that only ever passes proves nothing.
 
 Tools:
-- contextgraph-inspect stdio -- ./your-provider (also: --json, --query "goal", or http <url>) — prints negotiated capabilities, runs the suite, exits non-zero when non-conformant.
+- cargo install contextgraph-conformance, then contextgraph-inspect stdio -- ./your-provider (also: --json, --query "goal", http <url>, or host). It prints negotiated capabilities, runs the suite, and exits non-zero when the provider is not conformant.
 - ./.github/scripts/conformance-external.sh -- <program> [args] — points the same Rust oracle at an external provider in any language.
 
-Golden fixtures: five JSON files plus manifest.json (fixture profile 1.1.0). Each carries the source object, its digest-profile normalization, the exact RFC 8785 (JCS) canonical UTF-8 text, and the SHA-256 of those canonical bytes. The manifest pins protocol and profile versions and digests every file.
+Golden fixtures: seven JSON files plus manifest.json (fixture profile 1.1.0), under contextgraph-conformance/fixtures/contextgraph-1.0/. Each carries the source object, its digest-profile normalization, the exact RFC 8785 (JCS) canonical UTF-8 text, and the SHA-256 of those canonical bytes. The manifest pins protocol and profile versions and digests every file.
 
 ## 6. SDKs and host
 
 Four independent implementations, all passing the same conformance oracle: the Rust reference (contextgraph-types, contextgraph-host, contextgraph-conformance) and three zero-dependency SDKs.
 
+Rust crates on crates.io at 2.0.0, Rust 1.90 or later: contextgraph-types, contextgraph-host, contextgraph-conformance, contextgraph-trace (sketch stage, outside the stable surface). Add them with cargo add contextgraph-types@2 and cargo add contextgraph-host@2, or contextgraph-types = "2" in Cargo.toml.
+
+SDK registry versions (checked 2026-09-29): @contextgraphprotocol/typescript-sdk 0.1.0 on npm, contextgraph-sdk 0.1.0 on PyPI, the Go module at tag sdk/go/v0.1.0, and create-contextgraph-provider not yet on npm. The 0.1.0 SDKs send contextgraph/1.0-draft, the name from before the freeze, which a contextgraph/1.0 host accepts. The 2.0.0 SDKs on the protocol repository's main send contextgraph/1.0 and are not published yet (https://github.com/macanderson/context-graph-protocol/issues/227).
+
 TypeScript: npm install @contextgraphprotocol/typescript-sdk. Exports runStdioProvider(provider), budgetTokens(content), and the protocol types. A provider implements info(), capabilities(), query() (verify optional).
 
-Python: contextgraph_sdk (in-repo under sdk/python; stdlib-only, typed). run_stdio_provider(provider), budget_tokens(content). Any object with info()/capabilities()/query() is a provider.
+Python: pip install contextgraph-sdk (import contextgraph_sdk; stdlib-only, typed). run_stdio_provider(provider), budget_tokens(content). Any object with info()/capabilities()/query() is a provider.
 
 Go: module github.com/macanderson/context-graph-protocol/sdk/go/contextgraph. cg.RunStdioProvider(p), cg.BudgetTokens(content); implement cg.Verifier for verification.
 
