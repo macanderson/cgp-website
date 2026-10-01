@@ -3,7 +3,7 @@
     "route": "/",
     "file": "og-home.png",
     "eyebrow": "Open specification",
-    "marker": "contextgraph/1.0-draft",
+    "marker": "contextgraph/1.0",
     "title": ["Context as evidence,", "not on faith."],
     "accent": "evidence",
     "subtitle": "An open wire protocol for context retrieval — typed, budgeted, provenance-carrying frames for LLM agents."
@@ -12,7 +12,7 @@
     "route": "/docs",
     "file": "og-docs.png",
     "eyebrow": "Specification · 01",
-    "marker": "contextgraph/1.0-draft",
+    "marker": "contextgraph/1.0",
     "title": ["Introduction"],
     "subtitle": "What the Context Graph Protocol is, the seven guarantees, and how it relates to MCP."
   },
@@ -20,7 +20,7 @@
     "route": "/docs/concepts",
     "file": "og-docs-concepts.png",
     "eyebrow": "Specification · 02",
-    "marker": "contextgraph/1.0-draft",
+    "marker": "contextgraph/1.0",
     "title": ["Core concepts"],
     "subtitle": "Frames, kinds, representations, relations, token accounting, and temporal validity."
   },
@@ -28,7 +28,7 @@
     "route": "/docs/wire-protocol",
     "file": "og-docs-wire-protocol.png",
     "eyebrow": "Specification · 03",
-    "marker": "contextgraph/1.0-draft",
+    "marker": "contextgraph/1.0",
     "title": ["Wire protocol"],
     "subtitle": "NDJSON envelopes, the handshake lifecycle, versioning, correlation, and errors."
   },
@@ -36,7 +36,7 @@
     "route": "/docs/schema",
     "file": "og-docs-schema.png",
     "eyebrow": "Specification · 04",
-    "marker": "contextgraph/1.0-draft",
+    "marker": "contextgraph/1.0",
     "title": ["Schema"],
     "subtitle": "The JSON Schema, ContextFrame and ContextQuery shapes, provenance, and relations."
   },
@@ -44,17 +44,17 @@
     "route": "/docs/conformance",
     "file": "og-docs-conformance.png",
     "eyebrow": "Specification · 05",
-    "marker": "contextgraph/1.0-draft",
+    "marker": "contextgraph/1.0",
     "title": ["Conformance"],
-    "subtitle": "The seven checks, the adversarial RED suite, contextgraph-inspect, and golden fixtures."
+    "subtitle": "Provider, host, and composition checks, the adversarial RED suite, contextgraph-inspect, and golden fixtures."
   },
   {
     "route": "/docs/sdks",
     "file": "og-docs-sdks.png",
     "eyebrow": "Specification · 06",
-    "marker": "contextgraph/1.0-draft",
+    "marker": "contextgraph/1.0",
     "title": ["SDKs & host"],
-    "subtitle": "TypeScript, Python, and Go provider SDKs, plus the Rust host runtime."
+    "subtitle": "The Rust crates on crates.io, TypeScript, Python, and Go provider SDKs, and the Rust host runtime."
   },
   {
     "route": "/research",

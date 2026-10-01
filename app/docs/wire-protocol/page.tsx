@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ogImages } from "@/lib/og";
 import { CodeBlock } from "@/components/CodeBlock";
 import { DocsPager } from "@/components/DocsPager";
+import { FREEZE_DATE, PROTOCOL_VERSION } from "@/lib/protocol";
 
 export const metadata: Metadata = {
   title: "Wire protocol",
@@ -11,8 +12,8 @@ export const metadata: Metadata = {
   ...ogImages("/docs/wire-protocol"),
 };
 
-const SESSION = `{"type":"handshake","protocol_version":"contextgraph/1.0-draft"}
-{"type":"handshake_ack","protocol_version":"contextgraph/1.0-draft","provider":{…},"capabilities":{…}}
+const SESSION = `{"type":"handshake","protocol_version":"${PROTOCOL_VERSION}"}
+{"type":"handshake_ack","protocol_version":"${PROTOCOL_VERSION}","provider":{…},"capabilities":{…}}
 {"type":"query","id":"q1","query":{…}}
 {"type":"frames","id":"q1","result":{"frames":[…],"truncated":false}}
 {"type":"verify","request":{"frames":[{"provider_id":"docs","frame_id":"doc:1","content_digest":"sha256:…"}]}}
@@ -66,9 +67,8 @@ export default function WireProtocol() {
       <div className="table-scroll">
         <table className="field-table">
           <caption>
-            <span className="fig-n">Table 1</span> — Envelope types in{" "}
-            contextgraph/1.0-draft. verify/verified are additive and
-            capability-gated.
+            <span className="fig-n">Table 1.</span> Envelope types in{" "}
+            {PROTOCOL_VERSION}. The verify pair is capability-gated.
           </caption>
           <thead>
             <tr>
@@ -160,13 +160,20 @@ minor          = 1*DIGIT`}
       />
       <p>
         The major family is the substring up to the first dot. Two versions
-        interoperate <em>if and only if</em> they share a major family:{" "}
-        <code>contextgraph/1.0-draft</code> and <code>contextgraph/1.0</code>{" "}
-        both belong to <code>contextgraph/1</code> and interoperate;{" "}
-        <code>contextgraph/2.0</code> does not. This is what lets the spec
-        drop <code>-draft</code> at freeze without a flag day. A new optional
-        field is a minor change; a removed or renamed field requires a new
-        major family.
+        interoperate <em>if and only if</em> they share a major family.{" "}
+        <code>contextgraph/1.0</code> and a later <code>contextgraph/1.1</code>{" "}
+        both belong to <code>contextgraph/1</code> and interoperate.{" "}
+        <code>contextgraph/2.0</code> does not. A new optional field is a
+        minor change. A removed or renamed field requires a new major family.
+      </p>
+      <p>
+        The grammar keeps the optional <code>-draft</code> suffix, so the
+        pre-freeze name <code>contextgraph/1.0-draft</code> still parses and
+        still interoperates after the freeze on {FREEZE_DATE}. New
+        implementations send <code>{PROTOCOL_VERSION}</code>. Compare major
+        families instead of matching one string. In Rust, read{" "}
+        <code>contextgraph_types::PROTOCOL_VERSION</code> and call{" "}
+        <code>contextgraph_host::wire::versions_compatible</code>.
       </p>
 
       <h2>Correlation</h2>
@@ -184,11 +191,15 @@ minor          = 1*DIGIT`}
 
       <h2>Errors</h2>
       <p>
-        Six codes form an open vocabulary: <code>bad_request</code>,{" "}
-        <code>unsupported_kind</code>, <code>budget_unsatisfiable</code>,{" "}
-        <code>unavailable</code>, <code>shutting_down</code>,{" "}
-        <code>internal</code>. A host treats an unknown or absent code as{" "}
-        <code>internal</code>. Robustness is part of the contract: a provider
+        Eight codes form an open vocabulary: <code>bad_request</code>,{" "}
+        <code>unsupported_kind</code>,{" "}
+        <code>unsupported_representation</code>,{" "}
+        <code>incompatible_version</code>,{" "}
+        <code>budget_unsatisfiable</code>, <code>unavailable</code>,{" "}
+        <code>shutting_down</code>, and <code>internal</code>. A host treats
+        an unknown or absent code as <code>internal</code>.{" "}
+        <code>incompatible_version</code> is the named error H3 requires, and
+        a host must not retry it. Robustness is part of the contract: a provider
         must ignore-or-error a malformed line, never crash (R1), and must
         tear down cleanly on <code>shutdown</code> (R2).
       </p>

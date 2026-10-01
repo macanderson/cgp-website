@@ -1,24 +1,25 @@
 # Context Graph Protocol
 
-> The Context Graph Protocol (CGP) is an open wire protocol for context retrieval. It treats a piece of context as a typed, budgeted, provenance-carrying, consent-gated, and conformance-verified unit of exchange called a frame. A host asks providers for frames relevant to a goal, under a token budget; each provider returns frames that carry their own origin, their honest cost, and a human-readable citation label. Current revision: contextgraph/1.0-draft. License: MIT OR Apache-2.0.
+> The Context Graph Protocol (CGP) is an open wire protocol for context retrieval. It treats a piece of context as a typed, budgeted, provenance-carrying, consent-gated, and conformance-verified unit of exchange called a frame. A host asks providers for frames relevant to a goal, under a token budget; each provider returns frames that carry their own origin, their honest cost, and a human-readable citation label. Current revision: contextgraph/1.0, frozen on 2026-08-11. License: MIT OR Apache-2.0.
 
 Key facts:
-- The unit of exchange is a frame, never a blob. Seven frame kinds: snippet, symbol, fact, doc, memory, episode, graph.
+- The unit of exchange is a frame, never a blob. Seven base frame kinds: snippet, symbol, fact, doc, memory, episode, graph. The kind vocabulary is open, so a host keeps a frame of a kind it does not recognise.
 - The graph is carried in relations: a graph frame is a node with labelled edges ({ rel, target_uri, display_name? }).
 - Three content representations: full (inline), compact (transformed rendering + canonical hash), reference (no inline content; resolver handle + hash).
 - Canonical budget rule: token_cost = ceil(utf8_byte_length(content) / 4). Sum must not exceed the query's max_tokens.
 - Wire: NDJSON envelopes over stdio or streamable HTTP; eight envelope types (handshake, handshake_ack, query, frames, verify, verified, shutdown, error). CGP is NOT JSON-RPC.
-- Conformance: seven machine checks, validated adversarially against fourteen single-fault misbehave modes. Four independent implementations (Rust reference, TypeScript, Python, Go).
+- Conformance: 14 provider checks, 9 host checks, and 4 composition checks. CI runs 31 single-fault misbehave modes and fails unless a check catches each one. Four independent implementations (Rust reference, TypeScript, Python, Go).
+- Versions: the protocol version (contextgraph/1.0) and the crate version (2.0.0) move separately. The Rust crates contextgraph-types, contextgraph-host, contextgraph-conformance, and contextgraph-trace are on crates.io at 2.0.0. The TypeScript, Python, and Go SDKs are published at 0.1.0, which sends contextgraph/1.0-draft, the name from before the freeze. That name is in the same contextgraph/1 family and still interoperates.
 - CGP composes with MCP: MCP connects tools, CGP connects context.
 
 ## Documentation
 
-- [Introduction](https://contextgraphprotocol.org/docs): What CGP is, the seven guarantees, scope vs MCP
+- [Introduction](https://contextgraphprotocol.org/docs): What CGP is, the seven guarantees, scope vs MCP, protocol and crate versions
 - [Core concepts](https://contextgraphprotocol.org/docs/concepts): Frames, kinds, representations, relations, token accounting, temporal validity
 - [Wire protocol](https://contextgraphprotocol.org/docs/wire-protocol): Envelopes, handshake, versioning, correlation, errors
 - [Schema](https://contextgraphprotocol.org/docs/schema): JSON Schema (Draft 2020-12), ContextFrame and ContextQuery shapes
-- [Conformance](https://contextgraphprotocol.org/docs/conformance): The seven checks, the RED suite, contextgraph-inspect, golden fixtures
-- [SDKs & host](https://contextgraphprotocol.org/docs/sdks): TypeScript, Python, and Go provider SDKs; the Rust host runtime
+- [Conformance](https://contextgraphprotocol.org/docs/conformance): Provider, host, and composition checks, the RED suite, contextgraph-inspect, golden fixtures
+- [SDKs & host](https://contextgraphprotocol.org/docs/sdks): Package versions, the Rust crates on crates.io, TypeScript, Python, and Go provider SDKs, and the Rust host runtime
 
 ## Research
 
@@ -28,7 +29,9 @@ Key facts:
 ## Source
 
 - [Specification repository](https://github.com/macanderson/context-graph-protocol): SPEC.md, JSON schema, Rust crates, SDKs, conformance suite
+- [Rust crates on crates.io](https://crates.io/crates/contextgraph-types): contextgraph-types, contextgraph-host, contextgraph-conformance, contextgraph-trace
 - [TypeScript SDK on npm](https://www.npmjs.com/package/@contextgraphprotocol/typescript-sdk): @contextgraphprotocol/typescript-sdk
+- [Python SDK on PyPI](https://pypi.org/project/contextgraph-sdk/): contextgraph-sdk
 
 ## Optional
 

@@ -4,11 +4,17 @@ import Link from "next/link";
 import { CodeBlock } from "@/components/CodeBlock";
 import { DocsPager } from "@/components/DocsPager";
 import { GITHUB_URL } from "@/lib/site";
+import {
+  CRATE_VERSION,
+  FREEZE_DATE,
+  PROTOCOL_VERSION,
+  STABILITY_DOC_URL,
+} from "@/lib/protocol";
 
 export const metadata: Metadata = {
   title: "Introduction",
   description:
-    "What the Context Graph Protocol (CGP) is: an open wire protocol for context retrieval built on typed, budgeted, provenance-carrying frames. The seven guarantees and how CGP composes with MCP.",
+    "What the Context Graph Protocol (CGP) is: an open wire protocol for context retrieval built on typed, budgeted, provenance-carrying frames. The seven guarantees, how CGP composes with MCP, and how protocol and crate versions relate.",
   alternates: { canonical: "/docs" },
   ...ogImages("/docs"),
 };
@@ -35,10 +41,10 @@ export default function DocsIntro() {
         it came from, what it costs, when it was true, and how to cite it.
       </p>
       <p>
-        The current revision is <code>contextgraph/1.0-draft</code>. The
-        specification, reference implementation, conformance suite, and SDKs
-        are dual-licensed <code>MIT OR Apache-2.0</code> and developed in the
-        open at{" "}
+        The current revision is <code>{PROTOCOL_VERSION}</code>. It froze on{" "}
+        {FREEZE_DATE}. The specification, reference implementation,
+        conformance suite, and SDKs are dual-licensed{" "}
+        <code>MIT OR Apache-2.0</code> and developed in the open at{" "}
         <a href={GITHUB_URL} target="_blank" rel="noopener">
           macanderson/context-graph-protocol
         </a>
@@ -117,6 +123,43 @@ query      →  frames        (repeated; correlated by id)
 verify     →  verified      (optional, capability-gated)
 shutdown`}
       />
+      <h2>Versions</h2>
+      <p>
+        CGP has two version numbers, and each moves on its own schedule.
+      </p>
+      <ul>
+        <li>
+          <strong>Protocol version.</strong> <code>{PROTOCOL_VERSION}</code>{" "}
+          is what a host and a provider negotiate in the handshake. Rust code
+          reads it from <code>contextgraph_types::PROTOCOL_VERSION</code>.
+        </li>
+        <li>
+          <strong>Crate version.</strong> The Rust crates are at{" "}
+          <code>{CRATE_VERSION}</code> and follow semantic versioning for
+          their Rust API.
+        </li>
+      </ul>
+      <p>
+        Crate {CRATE_VERSION} speaks <code>{PROTOCOL_VERSION}</code>. It
+        changed the Rust API, when <code>FrameKind</code> became an open
+        vocabulary, and left the bytes on the wire as they were. A change that
+        breaks the wire needs <code>contextgraph/2.0</code> and a new crate
+        major together. No 1.x crate reached crates.io. The pre-freeze 0.1.x
+        crates are still there and speak the same <code>contextgraph/1</code>{" "}
+        family.
+      </p>
+      <p>
+        The pre-freeze name of this revision, <code>contextgraph/1.0-draft</code>,
+        is in the same family and still interoperates after the freeze. New
+        implementations send <code>{PROTOCOL_VERSION}</code>.{" "}
+        <a href={STABILITY_DOC_URL} target="_blank" rel="noopener">
+          docs/stability.md
+        </a>{" "}
+        in the protocol repository has the full rules, and{" "}
+        <Link href="/docs/sdks">SDKs &amp; host</Link> has the install
+        commands.
+      </p>
+
       <p>
         Continue with{" "}
         <Link href="/docs/concepts">Core concepts</Link> for the frame model,

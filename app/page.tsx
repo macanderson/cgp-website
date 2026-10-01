@@ -4,14 +4,15 @@ import { ogImages } from "@/lib/og";
 import { FigureGraph } from "@/components/FigureGraph";
 import { CodeBlock } from "@/components/CodeBlock";
 import { GITHUB_URL, PAPER_PATH } from "@/lib/site";
+import { CRATE_VERSION, PROTOCOL_VERSION } from "@/lib/protocol";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
   ...ogImages("/"),
 };
 
-const SESSION = `{"type":"handshake","protocol_version":"contextgraph/1.0-draft"}
-{"type":"handshake_ack","protocol_version":"contextgraph/1.0-draft",
+const SESSION = `{"type":"handshake","protocol_version":"${PROTOCOL_VERSION}"}
+{"type":"handshake_ack","protocol_version":"${PROTOCOL_VERSION}",
  "provider":{"name":"docs-provider","version":"0.1.0",
    "data_flow":{"reads":true,"writes":false,"egress":false}},
  "capabilities":{"query":{"kinds":["doc","snippet"]},"correlation":true}}
@@ -40,7 +41,7 @@ export default function Home() {
           <div>
             <span className="eyebrow">
               <span className="tick">§</span> Open specification ·{" "}
-              contextgraph/1.0-draft
+              {PROTOCOL_VERSION}
             </span>
             <h1>
               Context as <em>evidence</em>,<br />
@@ -76,7 +77,7 @@ export default function Home() {
                 <strong>8</strong> envelope types
               </span>
               <span>
-                <strong>7</strong> conformance checks
+                <strong>14</strong> provider checks
               </span>
               <span>
                 <strong>4</strong> independent implementations
@@ -227,12 +228,11 @@ export default function Home() {
                 <code>params</code> split.
               </p>
               <p>
-                No query payload moves before the handshake completes, and
-                capabilities are negotiated explicitly — never inferred by
+                No query payload moves before the handshake completes.
+                Capabilities are negotiated explicitly and never inferred by
                 observation. Two versions interoperate if and only if they
-                share a major family, which is what lets{" "}
-                <code>1.0-draft</code> freeze into <code>1.0</code> without a
-                flag day.
+                share a major family. That rule let <code>1.0-draft</code>{" "}
+                freeze into <code>1.0</code> on 2026-08-11 without a flag day.
               </p>
             </div>
             <aside className="margin-note">
@@ -259,18 +259,21 @@ export default function Home() {
             <div className="section-prose prose">
               <p>
                 &ldquo;CGP conformant&rdquo; means green on the conformance
-                suite for your declared capability set — a checkable claim,
-                not a self-attestation. Seven checks cover the handshake,
-                consent scopes, frame validity, verify honesty, budget
-                honesty, clean shutdown, and malformed-input tolerance.
+                suite for your declared capability set. That is a checkable
+                claim, not a self-attestation. Fourteen provider checks cover
+                the handshake, consent scopes, frame validity, verify honesty,
+                budget honesty, <code>as_of</code> pins, kind filters,
+                anchors, file digests, embeddings, correlation ids,
+                attestations, clean shutdown, and malformed input.
               </p>
               <p>
-                The suite must also prove it can catch a cheat: the bundled
-                reference provider ships fourteen <code>--misbehave</code>{" "}
-                modes that each break exactly one guarantee — lying about
-                costs, flooding past <code>max_frames</code>,
-                rubber-stamping verification — and CI asserts every mode is
-                caught. A suite that only ever passes proves nothing.
+                The suite must also prove it can catch a cheat. The bundled
+                reference provider ships 31 <code>--misbehave</code> modes,
+                and each breaks exactly one guarantee: lying about costs,
+                flooding past <code>max_frames</code>, rubber-stamping
+                verification, or forging a signature. CI runs every mode and
+                fails unless a check catches it. A suite that only ever passes
+                proves nothing.
               </p>
             </div>
             <aside className="margin-note">
@@ -295,7 +298,8 @@ export default function Home() {
                 <p>
                   The reference: <code>contextgraph-types</code>,{" "}
                   <code>contextgraph-host</code>, and the conformance suite
-                  with the <code>contextgraph-inspect</code> prober.
+                  with the <code>contextgraph-inspect</code> prober, on
+                  crates.io at {CRATE_VERSION}.
                 </p>
               </div>
               <div className="def-card">
