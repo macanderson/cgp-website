@@ -1,7 +1,7 @@
 /**
  * The protocol and release facts the site quotes, kept in one place.
  *
- * Each value was read from macanderson/context-graph-protocol at
+ * Each value was read from oxageninc/context-graph-protocol at
  * `PROTOCOL_SOURCE_COMMIT`, or from the registry named beside it on the date
  * given. When the protocol moves, change the value here and every page that
  * renders it follows. `public/llms.txt`, `public/llms-full.txt` and
@@ -74,13 +74,20 @@ export const SDK_PUBLISHED_VERSION = "0.1.0";
 
 /** Tracks the 2.0.0 SDK publish in the protocol repository. */
 export const SDK_PUBLISH_ISSUE_URL =
-  "https://github.com/macanderson/context-graph-protocol/issues/227";
+  "https://github.com/oxageninc/context-graph-protocol/issues/227";
 
 export const PYPI_SDK_URL = "https://pypi.org/project/contextgraph-sdk/";
 
+/**
+ * The Go module path still reads `macanderson` although the repository moved
+ * to `oxageninc` on 2026-10-01. It is the path `sdk/go/go.mod` declares and
+ * the published `sdk/go/v0.1.0` tag carries, so `go get` and an import fail
+ * under any other path. It changes when the protocol repository renames the
+ * module and tags a release, and then in every page that prints it.
+ */
 export const GO_SDK_URL =
   "https://pkg.go.dev/github.com/macanderson/context-graph-protocol/sdk/go/contextgraph";
 
 /** `docs/stability.md`: the crate version and the protocol version are separate axes. */
 export const STABILITY_DOC_URL =
-  "https://github.com/macanderson/context-graph-protocol/blob/main/docs/stability.md";
+  "https://github.com/oxageninc/context-graph-protocol/blob/main/docs/stability.md";

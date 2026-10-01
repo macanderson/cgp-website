@@ -3,7 +3,7 @@
 > Complete documentation for the Context Graph Protocol (CGP).
 > Current revision: contextgraph/1.0, frozen on 2026-08-11. Rust crates: 2.0.0 on crates.io.
 > Canonical site: https://contextgraphprotocol.org
-> Specification: https://github.com/macanderson/context-graph-protocol
+> Specification: https://github.com/oxageninc/context-graph-protocol
 > License: MIT OR Apache-2.0 (specification and implementations); CC BY 4.0 (technical report).
 
 ---
@@ -120,7 +120,7 @@ Four independent implementations, all passing the same conformance oracle: the R
 
 Rust crates on crates.io at 2.0.0, Rust 1.90 or later: contextgraph-types, contextgraph-host, contextgraph-conformance, contextgraph-trace (sketch stage, outside the stable surface). Add them with cargo add contextgraph-types@2 and cargo add contextgraph-host@2, or contextgraph-types = "2" in Cargo.toml.
 
-SDK registry versions (checked 2026-09-29): @contextgraphprotocol/typescript-sdk 0.1.0 on npm, contextgraph-sdk 0.1.0 on PyPI, the Go module at tag sdk/go/v0.1.0, and create-contextgraph-provider not yet on npm. The 0.1.0 SDKs send contextgraph/1.0-draft, the name from before the freeze, which a contextgraph/1.0 host accepts. The 2.0.0 SDKs on the protocol repository's main send contextgraph/1.0 and are not published yet (https://github.com/macanderson/context-graph-protocol/issues/227).
+SDK registry versions (checked 2026-09-29): @contextgraphprotocol/typescript-sdk 0.1.0 on npm, contextgraph-sdk 0.1.0 on PyPI, the Go module at tag sdk/go/v0.1.0, and create-contextgraph-provider not yet on npm. The 0.1.0 SDKs send contextgraph/1.0-draft, the name from before the freeze, which a contextgraph/1.0 host accepts. The 2.0.0 SDKs on the protocol repository's main send contextgraph/1.0 and are not published yet (https://github.com/oxageninc/context-graph-protocol/issues/227).
 
 TypeScript: npm install @contextgraphprotocol/typescript-sdk. Exports runStdioProvider(provider), budgetTokens(content), and the protocol types. A provider implements info(), capabilities(), query() (verify optional).
 

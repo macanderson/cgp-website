@@ -1,6 +1,6 @@
 export const SITE_URL = "https://contextgraphprotocol.org";
 
-export const GITHUB_URL = "https://github.com/macanderson/context-graph-protocol";
+export const GITHUB_URL = "https://github.com/oxageninc/context-graph-protocol";
 
 export const NPM_TS_SDK_URL =
   "https://www.npmjs.com/package/@contextgraphprotocol/typescript-sdk";
