@@ -22,7 +22,7 @@ const site = read("lib/site.ts");
 
 describe("the publish step cannot evict the protocol repository's output", () => {
   // `schema/` and `spec/` under this bucket belong to
-  // macanderson/context-graph-protocol, which publishes into it separately.
+  // oxageninc/context-graph-protocol, which publishes into it separately.
   // `aws s3 sync --delete` removes anything the local build did not produce,
   // and deleting a file it did not expect is not an error — so without these
   // excludes every schema URL the specification hands out 404s, silently, on
@@ -42,8 +42,9 @@ describe("the publish step cannot evict the protocol repository's output", () =>
 
 describe("the deploy authenticates the way the IAM role expects", () => {
   // There is no stored AWS key. The job exchanges its OIDC token for a session
-  // on `gha-deploy-cgp-website`, whose trust policy names exactly one subject:
-  // `repo:macanderson/cgp-website:environment:production`. Dropping the
+  // on `gha-deploy-cgp-website`, whose trust policy has to name this job's
+  // subject, `repo:oxageninc@267772457/cgp-website@1310376825:environment:production`
+  // (GitHub's immutable form, with the owner and repository ids). Dropping the
   // `environment:` line reads like removing ceremony and actually removes the
   // claim the role matches on, so the deploy fails rather than loosens — but
   // it fails at the point where it is least obvious why.

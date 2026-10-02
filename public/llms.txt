@@ -28,7 +28,7 @@ Key facts:
 
 ## Source
 
-- [Specification repository](https://github.com/macanderson/context-graph-protocol): SPEC.md, JSON schema, Rust crates, SDKs, conformance suite
+- [Specification repository](https://github.com/oxageninc/context-graph-protocol): SPEC.md, JSON schema, Rust crates, SDKs, conformance suite
 - [Rust crates on crates.io](https://crates.io/crates/contextgraph-types): contextgraph-types, contextgraph-host, contextgraph-conformance, contextgraph-trace
 - [TypeScript SDK on npm](https://www.npmjs.com/package/@contextgraphprotocol/typescript-sdk): @contextgraphprotocol/typescript-sdk
 - [Python SDK on PyPI](https://pypi.org/project/contextgraph-sdk/): contextgraph-sdk

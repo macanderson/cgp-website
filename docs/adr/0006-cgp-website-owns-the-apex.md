@@ -55,7 +55,7 @@ meant to be one; the freeze in #12 is lifted.
 and no Vercel deploy from any repository can reach it.
 
 **The bucket has two tenants and the site is the guest.** `schema/` and
-`spec/` under it belong to `macanderson/context-graph-protocol`. The
+`spec/` under it belong to `oxageninc/context-graph-protocol`. The
 `--delete` sync in the deploy job excludes both; the deploy role is
 additionally denied write and delete on those prefixes in IAM. The excludes
 are the mechanism, the deny is the backstop, and dropping the excludes fails

@@ -1,6 +1,6 @@
 # Context Graph Protocol — microsite
 
-The marketing and documentation microsite for the [Context Graph Protocol](https://github.com/macanderson/context-graph-protocol): an open wire protocol for context retrieval built on typed, budgeted, provenance-carrying frames.
+The marketing and documentation microsite for the [Context Graph Protocol](https://github.com/oxageninc/context-graph-protocol): an open wire protocol for context retrieval built on typed, budgeted, provenance-carrying frames.
 
 **Live:** https://contextgraphprotocol.org
 
@@ -60,18 +60,18 @@ is a production change.** That was contested for seven weeks — issue #12 froze
 merges because a Vercel project appeared to serve the apex from a *different*
 app while pointing its Git integration here. It no longer does: the apex moved
 to AWS, and the competing app was retired upstream in
-`macanderson/context-graph-protocol#68`. `docs/adr/0006` records the topology
+`oxageninc/context-graph-protocol#68`. `docs/adr/0006` records the topology
 and the evidence; `scripts/deploy-hygiene.test.ts` fails if any of it stops
 being true.
 
 The bucket has a second tenant. `schema/` and `spec/` under it belong to
-`macanderson/context-graph-protocol`, so a reader who fetches
+`oxageninc/context-graph-protocol`, so a reader who fetches
 `contextgraphprotocol.org/schema/contextgraph-envelope.schema.json` is served
 that repository's output, not this one's.
 
 `.github/workflows/deploy.yml` publishes on every push to `main`, on manual
 dispatch, and on a `protocol-updated` repository dispatch from
-`macanderson/context-graph-protocol` — the rendered docs quote the
+`oxageninc/context-graph-protocol` — the rendered docs quote the
 specification, so a protocol merge that did not rebuild this site would leave
 the two describing different things.
 
@@ -109,8 +109,11 @@ AWS, and the deploy job above remains the only publisher of
 the protocol repository's `schema/` and `spec/` paths from resolving, because
 those live only in the bucket.
 
-Infrastructure lives in the `oxagen-aws-infra` repository (`stacks/cgp`,
-`stacks/ci-deploy`).
+Infrastructure lives in `oxageninc/product`, under `infra/stacks-new/cgp`
+(the bucket, the CloudFront distribution, and DNS) and
+`infra/stacks-new/ci-deploy` (the `gha-deploy-cgp-website` role and its trust
+policy). The `oxagen-aws-infra` repository that held the old account's stacks
+is archived.
 
 ## License
 
@@ -120,7 +123,7 @@ Site code MIT. The Context Graph Protocol specification and implementations are 
 
 Dependabot checks GitHub Actions weekly. What it skips is the Oxagen reusable
 workflows that the callers in `.github/workflows/` reference, excluded by the
-`macanderson/oxagen/.github/workflows/*` ignore pattern. That pattern names a
+`oxageninc/product/.github/workflows/*` ignore pattern. That pattern names a
 remote dependency, so the caller files themselves are not exempt: every other
 action they pin is still updated automatically. The Oxagen pins are the
 exception because they are maintained together across Stella, ArenaBench,
@@ -136,5 +139,5 @@ files pass.
 The pin is a commit SHA rather than `@main` so that no repository can change
 a required check in another without a commit to review there. The cost is a
 re-pin in every caller, and the failure mode is paying it in three of four.
-[Oxagen ADR-045](https://github.com/macanderson/oxagen/blob/main/docs/adr/ADR-045-pin-cross-repo-reusable-workflows.md)
+[Oxagen ADR-045](https://github.com/oxageninc/product/blob/main/docs/adr/ADR-045-pin-cross-repo-reusable-workflows.md)
 records that decision.

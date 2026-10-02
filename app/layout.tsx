@@ -71,7 +71,7 @@ const orgJsonLd = {
   url: SITE_URL,
   logo: `${SITE_URL}/brand/cgp-mark-light.svg`,
   sameAs: [
-    "https://github.com/macanderson/context-graph-protocol",
+    "https://github.com/oxageninc/context-graph-protocol",
     "https://www.npmjs.com/package/@contextgraphprotocol/typescript-sdk",
   ],
 };
@@ -112,7 +112,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/research">Research</Link>
               <Link href="/brand">Brand</Link>
               <a
-                href="https://github.com/macanderson/context-graph-protocol"
+                href="https://github.com/oxageninc/context-graph-protocol"
                 target="_blank"
                 rel="noopener"
               >
@@ -143,7 +143,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
               <div className="footer-col">
                 <span className="eyebrow">Resources</span>
-                <a href="https://github.com/macanderson/context-graph-protocol" target="_blank" rel="noopener">
+                <a href="https://github.com/oxageninc/context-graph-protocol" target="_blank" rel="noopener">
                   Specification ↗
                 </a>
                 <a

@@ -46,7 +46,7 @@ export default function DocsIntro() {
         conformance suite, and SDKs are dual-licensed{" "}
         <code>MIT OR Apache-2.0</code> and developed in the open at{" "}
         <a href={GITHUB_URL} target="_blank" rel="noopener">
-          macanderson/context-graph-protocol
+          oxageninc/context-graph-protocol
         </a>
         .
       </p>
