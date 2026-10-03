@@ -9,7 +9,10 @@ import { SITE_URL } from "@/lib/site";
 // reason and is simply reached second.
 export const dynamic = "force-static";
 
-const LAST_MODIFIED = new Date("2026-07-23");
+// The export runs once per deploy, so the build time is when these pages last
+// changed on the live site. A fixed date told crawlers nothing had changed
+// since 2026-07-23, however many deploys followed (#1).
+const LAST_MODIFIED = new Date();
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [

@@ -147,6 +147,16 @@ describe("sitemap covers what is actually published", () => {
       expect(entry.priority).toBeLessThanOrEqual(1);
     }
   });
+
+  it("dates every entry at build time", () => {
+    // A fixed date tells crawlers nothing changed, however many deploys
+    // followed it (#1).
+    for (const entry of entries) {
+      const age = Date.now() - new Date(entry.lastModified ?? 0).getTime();
+      expect(age).toBeGreaterThanOrEqual(0);
+      expect(age).toBeLessThan(10 * 60_000);
+    }
+  });
 });
 
 describe("robots.txt", () => {
