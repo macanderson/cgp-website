@@ -118,6 +118,14 @@ export default function SchemaPage() {
               </td>
             </tr>
             <tr>
+              <td>uri</td>
+              <td>string?</td>
+              <td>
+                The frame&rsquo;s own URI. A query anchor equal to it anchors
+                the frame.
+              </td>
+            </tr>
+            <tr>
               <td>content_ref</td>
               <td>object?</td>
               <td>
@@ -143,6 +151,22 @@ export default function SchemaPage() {
               <td>
                 <code>{`{ method, implementation, version }`}</code> for{" "}
                 <code>compact</code> renderings.
+              </td>
+            </tr>
+            <tr>
+              <td>minimum_content_fidelity</td>
+              <td>enum?</td>
+              <td>
+                The lowest <code>content_fidelity</code> accepted where the
+                frame is used.
+              </td>
+            </tr>
+            <tr>
+              <td>inline_content_requirement</td>
+              <td>enum?</td>
+              <td>
+                <code>required | resolvable_reference_allowed</code>: whether
+                the frame must carry its content inline.
               </td>
             </tr>
             <tr>
@@ -214,16 +238,6 @@ export default function SchemaPage() {
               <td>The driving task — verbatim intent, not keywords.</td>
             </tr>
             <tr>
-              <td><span className="req">●</span> kinds</td>
-              <td>FrameKind[]</td>
-              <td>Empty means &ldquo;your best frames of any kind.&rdquo;</td>
-            </tr>
-            <tr>
-              <td><span className="req">●</span> anchors</td>
-              <td>string[]</td>
-              <td>Focal URIs — open files, mentioned symbols.</td>
-            </tr>
-            <tr>
               <td><span className="req">●</span> max_frames</td>
               <td>u32</td>
               <td>Hard cap on returned frames.</td>
@@ -232,6 +246,22 @@ export default function SchemaPage() {
               <td><span className="req">●</span> max_tokens</td>
               <td>u32</td>
               <td>A hard contract, not a hint.</td>
+            </tr>
+            <tr>
+              <td>kinds</td>
+              <td>FrameKind[]</td>
+              <td>
+                Absent or empty means &ldquo;your best frames of any
+                kind.&rdquo;
+              </td>
+            </tr>
+            <tr>
+              <td>anchors</td>
+              <td>string[]</td>
+              <td>
+                Focal URIs, such as open files and mentioned symbols. Absent
+                means none.
+              </td>
             </tr>
             <tr>
               <td>query_text</td>

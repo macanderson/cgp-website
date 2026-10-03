@@ -83,9 +83,9 @@ Example query envelope:
 
 Single JSON Schema, Draft 2020-12: schema/contextgraph-envelope.schema.json. The root validates one envelope (oneOf over the eight types); every payload shape is under $defs. There is no separate IDL — the contextgraph-types Rust structs serialized by serde_json are the protocol.
 
-ContextFrame required fields: id, kind, title, score (0..1), token_cost (u32). Optional: content (untrusted; governed per representation), representation, content_digest (sha256: + 64 hex), content_ref, canonical_content_hash, content_fidelity, transform, minimum_content_fidelity, inline_content_requirement, canonical_token_cost, tokenizer_ref, valid_from, valid_to, recorded_at, provenance[] (omitted when empty), citation_label (non-empty when present), embedding ({ fingerprint, vector? }), relations[] (omitted when empty).
+ContextFrame required fields: id, kind, title, score (0..1), token_cost (u32). Optional: content (untrusted; governed per representation), representation, content_digest (sha256: + 64 hex), uri (the frame's own URI; a query anchor equal to it anchors the frame), content_ref, canonical_content_hash, content_fidelity, transform, minimum_content_fidelity, inline_content_requirement, canonical_token_cost, tokenizer_ref, valid_from, valid_to, recorded_at, provenance[] (omitted when empty), citation_label (non-empty when present), embedding ({ fingerprint, vector? }), relations[] (omitted when empty).
 
-ContextQuery required: goal, kinds (empty = any kind), anchors, max_frames, max_tokens (a hard contract, not a hint). Optional: query_text, embedding (only when host and provider embeddings_fingerprint match exactly — E1), as_of, representation_preferences.
+ContextQuery required: goal, max_frames, max_tokens (a hard contract, not a hint). Optional: kinds (absent or empty = any kind), anchors (absent = none), query_text, embedding (only when host and provider embeddings_fingerprint match exactly — E1), as_of, representation_preferences.
 
 Capabilities fields: query ({ kinds }), correlation, graph, embeddings_fingerprint (<model-id>/<dimensions>[/<normalization>]), verify, representations, resolve.
 DataFlow: { reads, writes, egress, egress_scopes[] }. Egress scope base classes: local-only, org-tenant, third-party-index, third-party-model (+ namespaced vendor:scope).
@@ -120,13 +120,13 @@ Four independent implementations, all passing the same conformance oracle: the R
 
 Rust crates on crates.io at 2.0.0, Rust 1.90 or later: contextgraph-types, contextgraph-host, contextgraph-conformance, contextgraph-trace (sketch stage, outside the stable surface). Add them with cargo add contextgraph-types@2 and cargo add contextgraph-host@2, or contextgraph-types = "2" in Cargo.toml.
 
-SDK registry versions (checked 2026-09-29): @contextgraphprotocol/typescript-sdk 0.1.0 on npm, contextgraph-sdk 0.1.0 on PyPI, the Go module at tag sdk/go/v0.1.0, and create-contextgraph-provider not yet on npm. The 0.1.0 SDKs send contextgraph/1.0-draft, the name from before the freeze, which a contextgraph/1.0 host accepts. The 2.0.0 SDKs on the protocol repository's main send contextgraph/1.0 and are not published yet (https://github.com/oxageninc/context-graph-protocol/issues/227).
+SDK registry versions (checked 2026-10-02): @contextgraphprotocol/typescript-sdk 0.1.0 on npm, contextgraph-sdk 0.1.0 on PyPI, the Go module at tag sdk/go/v0.1.0, and create-contextgraph-provider not yet on npm. The 0.1.0 SDKs send contextgraph/1.0-draft, the name from before the freeze, which a contextgraph/1.0 host accepts. The 2.0.0 SDKs on the protocol repository's main send contextgraph/1.0 and are not published yet (https://github.com/oxageninc/context-graph-protocol/issues/227).
 
 TypeScript: npm install @contextgraphprotocol/typescript-sdk. Exports runStdioProvider(provider), budgetTokens(content), and the protocol types. A provider implements info(), capabilities(), query() (verify optional).
 
 Python: pip install contextgraph-sdk (import contextgraph_sdk; stdlib-only, typed). run_stdio_provider(provider), budget_tokens(content). Any object with info()/capabilities()/query() is a provider.
 
-Go: module github.com/macanderson/context-graph-protocol/sdk/go/contextgraph. cg.RunStdioProvider(p), cg.BudgetTokens(content); implement cg.Verifier for verification.
+Go: import github.com/macanderson/context-graph-protocol/sdk/go/contextgraph (module github.com/macanderson/context-graph-protocol/sdk/go). cg.RunStdioProvider(p), cg.BudgetTokens(content); implement cg.Verifier for verification.
 
 The stdio runtime in each SDK drives the whole lifecycle a host expects — handshake, query (echoing the correlation id), verify, shutdown — and stays alive with a typed error on a malformed line.
 
