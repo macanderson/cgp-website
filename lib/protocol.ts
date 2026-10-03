@@ -14,7 +14,7 @@
  */
 
 /** The commit of the protocol repository's `main` these facts come from. */
-export const PROTOCOL_SOURCE_COMMIT = "f2ca66d7a2ddc7fa166f0b019b9e57c0f59bb83f";
+export const PROTOCOL_SOURCE_COMMIT = "6b9e7348157fcf576fd389ea34d2d9f93f36618d";
 
 /** `contextgraph_types::PROTOCOL_VERSION` in `contextgraph-types/src/lib.rs`. */
 export const PROTOCOL_VERSION = "contextgraph/1.0";
@@ -68,7 +68,7 @@ export const RUST_MSRV = "1.90";
  * declares 2.0.0 for the TypeScript and Python packages and for
  * `create-contextgraph-provider`; that release is not published yet.
  */
-export const SDK_REGISTRY_CHECKED = "2026-09-29";
+export const SDK_REGISTRY_CHECKED = "2026-10-02";
 
 export const SDK_PUBLISHED_VERSION = "0.1.0";
 
